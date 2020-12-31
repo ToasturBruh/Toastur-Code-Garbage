@@ -1,0 +1,364 @@
+@name Motorola Spectra Radio
+@inputs Screen:entity VolUp VolDn CycleChan
+@outputs Vol Channel
+@persist EGP:wirelink A B Vol Vol1 Channels:array Channel ChannelIDX PrintChannel SwitchCooldown
+@persist UseKeys ChanUpKey:string ChanDnKey:string VolUpKey:string VolDnKey:string
+@trigger On VolUp VolDn CycleChan SwitchCooldown O
+@model models/parts/radio_msa.mdl
+
+#Toast
+
+#wire_egp_model models/sprops/rectangles_superthin/size_1/rect_3x6.mdl
+#YOU MUST CHECK THE TRANSPARENT BACKGROUND BOX!!!!!!!!!!!!!!!!!!!!!!!!!!
+#IF YOU ASK ME WHY IT'S BLACK I WILL STAB YOU!!!!!!!!!!
+
+if(first() | dupefinished() | ~Screen){
+    #How to get your stream URL:
+    #1 - Go to http://www.railroadradio.net/
+    #2 - Find the stream you want in the top tabs
+    #3 - Right click the link that reads LISTEN - VLC, Winamp, XMMS (.pls) and copy the URL
+    #4 - Paste in the array below
+    #Note: does not actually have to be a rail radio stream
+    
+    Channels = array(
+    "http://www.railroadradio.net/content/playlist/centralia-north.pls",
+    "http://www.railroadradio.net/content/playlist/whitefish.pls",
+    "http://www.railroadradio.net/content/playlist/lancaster.pls",
+    "http://www.railroadradio.net/content/playlist/truckee.pls",
+    "http://www.railroadradio.net/content/playlist/central-valley.pls",
+    "http://www.railroadradio.net/content/playlist/hesperia1.pls",
+    "https://radio.thetofushop.net/public/eurobeat_radio/playlist/pls",
+    "https://www.internet-radio.com/servers/tools/playlistgenerator/?u=http://us4.internet-radio.com:8258/listen.pls&t=.pls"
+    )
+    
+    PrintChannel = 1 #Prints the currently playing channel when switched.
+    
+    #Not used-----------
+    #[UseKeys = 1 #If you want to be able to use your keyboard to use the radio.
+    ChanUpKey = "W"
+    ChanDnKey = "S"
+    VolUpKey = ""
+    VolDnKey = ""]#
+    
+
+    
+    #End of config
+    
+    if(Screen:model() != "models/sprops/rectangles_superthin/size_1/rect_3x6.mdl"){
+        print("Incorrect EGP model!\nPlease use models/sprops/rectangles_superthin/size_1/rect_3x6.mdl")
+    }else{
+        EGP = Screen:wirelink()
+    }
+
+    #entity():streamStart(1,Channels[1,string],1)
+    streamDisable3D(1)
+    entity():setAlpha(0)
+    Screen:setMaterial("models/proppertextures/invisible")
+    
+    Screen:setPos(entity():toWorld(vec(1.5,-0.5,0)))
+    Screen:setAng(entity():toWorld(ang(0,0,90)))
+    
+    TextFont = "agency fb"
+    DigtialFont = "quartz ms"
+    
+    A = 1
+    EGP:egpText(A,"VOLUME",vec2(380,300))
+    EGP:egpSize(A,25)
+    EGP:egpAlign(A,1)
+    EGP:egpFont(A,TextFont)
+    
+    A++
+    EGP:egpText(A,"TX                DX",vec2(250,25))
+    EGP:egpColor(A,vec(255))
+    EGP:egpSize(A,25)
+    EGP:egpAlign(A,1)
+    EGP:egpFont(A,TextFont)
+    
+    A++
+    EGP:egpText(A,"DISP   T/D                       HOME",vec2(250,150))
+    EGP:egpColor(A,vec(255))
+    EGP:egpSize(A,25)
+    EGP:egpAlign(A,1)
+    EGP:egpFont(A,TextFont)
+    
+    A++
+    ChannelIDX = A
+    EGP:egpText(A,"01   01",vec2(250,75))
+    EGP:egpColor(A,vec(0,200,200))
+    EGP:egpSize(A,50)
+    EGP:egpAlign(A,1)
+    EGP:egpFont(A,DigtialFont)
+    
+    #Volume notches
+    
+    A++
+    Vol1 = A
+    EGP:egpBox(A,vec2(350,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(357,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(364,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(371,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(378,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(385,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(392.5,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(399.5,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(406.5,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    A++
+    EGP:egpBox(A,vec2(413,282.5),vec2(5,15)*vec2(1,2))
+    EGP:egpColor(A,vec(60,50,0))
+    
+    B = 1
+    holoCreate(B, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/parts/radio_msa.mdl")
+    holoScale(B, vec(1,1,1))
+    holoParent(B, entity())
+    holoMaterial(B,"")
+    holoEntity(B):setSubMaterial(2,"models/proppertextures/acrylic_gold")
+    holoClipEnabled(B,1,1)
+    holoClip(B,1,vec(-0.5,0,0),vec(1,0,0),0)
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/parts/radio_msa.mdl")
+    holoScale(B, vec(1,1,1))
+    holoParent(B, entity())
+    holoMaterial(B,"")
+    holoEntity(B):setSubMaterial(2,"models/proppertextures/cabpaint_seafoam")
+    holoClipEnabled(B,1,1)
+    holoClip(B,1,vec(-0.5,0,0),vec(-1,0,0),0)
+    
+    #Volume button
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2.6,-0.936,-1.32)), vec(1),
+    entity():toWorld(ang(0,2,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_v.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2.82,-0.9,-1.32)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_o.mdl")
+    holoScale(B, vec(0.015,0.03,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(3.05,-0.936,-1.32)), vec(1),
+    entity():toWorld(ang(0,178,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_l.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2.4,-0.94,-1.32)), vec(1),
+    entity():toWorld(ang(0,2,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/triangles/regular/etri_18x18.mdl")
+    holoScale(B, vec(0.01,0.01,0.01))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(3.25,-0.94,-1.32)), vec(1),
+    entity():toWorld(ang(180,-2,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/triangles/regular/etri_18x18.mdl")
+    holoScale(B, vec(0.01,0.01,0.01))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    #DISP button
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2,-0.93,-0.7)), vec(1),
+    entity():toWorld(ang(180,0,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_D.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2,-0.93,-0.91)), vec(1),
+    entity():toWorld(ang(180,0,0)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_I.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2,-0.93,-1.15)), vec(1),
+    entity():toWorld(ang(180,0,180)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_S.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(2,-0.93,-1.35)), vec(1),
+    entity():toWorld(ang(180,0,180)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_P.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    #PTT button
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(3.675,-0.93,-0.775)), vec(1),
+    entity():toWorld(ang(180,0,180)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_P.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(3.675,-0.93,-1)), vec(1),
+    entity():toWorld(ang(180,0,180)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_T.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    B++
+    holoCreate(B, 
+    entity():toWorld(vec(3.675,-0.93,-1.25)), vec(1),
+    entity():toWorld(ang(180,0,180)))
+    holoColor(B, vec4(255,255,255,255))
+    holoModel(B, "models/sprops/misc/alphanum/alphanum_T.mdl")
+    holoScale(B, vec(0.015,0.02,0.015))
+    holoParent(B, entity())
+    holoMaterial(B,"models/proppertextures/enamel_black")
+    
+    if(UseKeys){
+        runOnKeys(owner(),1)
+    }
+    
+    Vol = 5
+    streamVolume(1,Vol/10)
+    Channel = 0
+    
+    for(V = 1, 10){
+        local VIDX = (Vol1)+V
+        EGP:egpColor(VIDX-1,vec(255,191,0))
+        
+        if(V > Vol){
+            EGP:egpColor(VIDX-1,vec(60,50,0))
+        }
+    }
+    
+}
+#interval(250)
+if(UseKeys){
+    O = owner()
+    if(O:keyPressed(ChanUpKey)){Channel++}
+    if(O:keyPressed(ChanDnKey)){Channel--}
+}
+
+if(CycleChan){Channel++}
+if(Channel > Channels:count()){Channel = 0}
+if(Channel < 0){Channel = Channels:count()}
+
+if(VolUp & ~VolUp){Vol++}
+if(VolDn & ~VolDn){Vol--}
+
+if(changed(Vol)){
+
+    if(Vol > 10){Vol = 10}
+    if(Vol < 0){Vol = 0}
+    
+    entity():soundPlay(0,0,"gsgtrainsounds/misc/radio/radio_beep1.wav")
+    soundVolume(0,Vol/10)
+    
+    for(V = 1, 10){
+        local VIDX = (Vol1)+V
+        EGP:egpColor(VIDX-1,vec(255,191,0))
+        
+        if(V > Vol){
+            EGP:egpColor(VIDX-1,vec(60,50,0))
+        }
+    }
+    
+    streamVolume(1,Vol/10)
+}
+
+
+if(changed(Channel)){
+    #streamStop(1)
+    #entity():streamStart(1,Channels[Channel,string],Vol)
+    entity():soundPlay(2,0,"gsgtrainsounds/misc/radio/radio_beep1b.wav")
+    stoptimer("change")
+    timer("change",2500)
+    if(PrintChannel & Channel != 0){print("Now playing:\n"+Channels[Channel,string])}else{print("Off")}
+    
+    if(Channel < 10){
+        EGP:egpText(ChannelIDX,"0"+Channel+"   0"+Channel,vec2(250,75))
+        }else{
+        EGP:egpText(ChannelIDX,Channel+"   "+Channel,vec2(250,75))
+    }
+    
+    #timer("cooldown",1000)
+}
+if(clk("change")){
+    entity():streamStart(1,Channels[Channel,string],Vol)
+    streamVolume(1,Vol)
+    if(Channel == 0){streamStop(1)}
+}
+
+
+
+
