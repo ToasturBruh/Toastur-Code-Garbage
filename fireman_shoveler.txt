@@ -1,0 +1,77 @@
+@name Fireman Shoveler
+@inputs FiremanFootplate:entity Shovel:entity TenderButton FireboxButton
+@outputs Driver:entity AddCoal Loaded
+@persist Loaded
+@trigger
+
+if(first() | dupefinished() | changed(FiremanFootplate)){
+    #NOTE: I HIGHLY suggest you change the ShovelRate in RSC if you use this, otherwise the coal (probably) won't be added fast enough. 
+    #Somewhere between 5 and 10 is a good rate.
+    #(You CAN increase CoalTimeout, but then you'd hardly need to shovel. Where's the fun in that?)
+    
+    #Setup:
+    #Wire TenderButton to a button in or around the tender. This will be used to shovel coal.
+    #Wire FireboxButton to a button around the firebox. This is where the coal will be thrown. Who'da thunk?
+    #Wire AddCoal on RSC to the E2.
+    #The shovel entity wire is purely cosmetic. You can wire it to a shovel model so it goes invisible when you're shoveling.
+    
+    CoalTimeout = 2 #How long coal will be added after you shovel it. (In seconds)
+    
+    A = 1
+    holoCreate(A, 
+    FiremanFootplate:toWorld(vec(10,0,30)), vec(1),
+    FiremanFootplate:toWorld(ang(-90,0,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/props_junk/shovel01a.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, FiremanFootplate)
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    FiremanFootplate:toWorld(vec(10,25,29.5)), vec(1),
+    FiremanFootplate:toWorld(ang(0,0,5)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/props_gulch/coal2.mdl")
+    holoScale(A, vec(0.025))
+    holoParent(A, FiremanFootplate)
+    holoMaterial(A,"")
+
+}
+
+
+interval(250)
+Driver = FiremanFootplate:driver()
+#print(Driver)
+
+if(FiremanFootplate:driver()){
+        Shovel:setAlpha(0)
+        holoAlpha(1,255)
+        
+        if(TenderButton){Loaded = 1 holoAlpha(2,255)}
+        if(Loaded & FireboxButton){
+            AddCoal = 1
+            Loaded = 0
+            holoAlpha(2,0)
+            stoptimer("coaltimeout")
+            timer("coaltimeout",2000)
+        }
+    }else{
+        holoAlpha(1,0)
+        holoAlpha(2,0)
+        Shovel:setAlpha(255)
+        Loaded = 0
+}
+
+if(clk("coaltimeout")){
+    stoptimer("coaltimeout")
+    AddCoal = 0
+}
+
+if(changed(Loaded) & Loaded){
+    holoEntity(1):soundPlay(0,0,"moztrainsounds/steam/generic/coal_shovel_in.wav")
+}elseif(changed(Loaded) & !Loaded){
+    holoEntity(1):soundPlay(0,0,"moztrainsounds/steam/generic/coal_shovel_throw.wav")
+}
+
+#setName("Fireman Shoveler\n"+Driver:toString())

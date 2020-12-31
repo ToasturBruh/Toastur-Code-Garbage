@@ -1,0 +1,157 @@
+@name American External Throttle
+@inputs Throttle
+@outputs 
+@persist Ang Main RelMount
+@model models/sprops/cylinders/size_3/cylinder_6x12.mdl
+
+if(first() | dupefinished()){
+    
+    entity():setAlpha(0)
+    
+    A = 1
+    holoCreate(A, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/cylinders/size_3/cylinder_6x12.mdl")
+    holoScale(A, vec(1,1,0.7))
+    holoParent(A, entity())
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(1):toWorld(vec(0,0,0)), vec(1),
+    holoEntity(1):toWorld(ang(0,12.5,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/cylinders/size_3/cylinder_6x12.mdl")
+    holoScale(A, vec(0.9,0.9,1))
+    holoParent(A, holoEntity(1))
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    Main = A
+    holoCreate(A, 
+    holoEntity(1):toWorld(vec(0,0,0)), vec(1),
+    holoEntity(1):toWorld(ang(0,12.5,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "")
+    holoScale(A, vec(0))
+    holoParent(A, holoEntity(1))
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(1):toWorld(vec(0,0,-6)), vec(1),
+    holoEntity(1):toWorld(ang(0,0,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/tubes/size_3/tube_36x6.mdl")
+    holoScale(A, vec(0.7,0.1,0.7))
+    holoParent(A, holoEntity(1))
+    holoMaterial(A,"wtp/metal_2")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(0,0,0),vec(1,0,0),0)
+    holoClipEnabled(A,2,1)
+    holoClip(A,2,vec(0,0,0),vec(1,0,1),0)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(1):toWorld(vec(0,0,-6)), vec(1),
+    holoEntity(1):toWorld(ang(0,90,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x24x1_5.mdl")
+    holoScale(A, vec(1.05,0.75,0.4))
+    holoParent(A, holoEntity(1))
+    holoMaterial(A,"wtp/metal_2")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(0,0,0),vec(-1,0,0),0)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(1):toWorld(vec(0,0,-6)), vec(1),
+    holoEntity(1):toWorld(ang(0,-135,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x24x1_5.mdl")
+    holoScale(A, vec(1.05,0.75,0.4))
+    holoParent(A, holoEntity(1))
+    holoMaterial(A,"wtp/metal_2")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(0.75,0,0),vec(-1,0,0),0)
+    
+    #Throttle
+    
+    A++
+    holoCreate(A, 
+    holoEntity(Main):toWorld(vec(12,0,-5)), vec(1),
+    holoEntity(Main):toWorld(ang(0,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x24x1_5.mdl")
+    holoScale(A, vec(1,1,0.75))
+    holoParent(A, holoEntity(Main))
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(Main):toWorld(vec(12,0,-6)), vec(1),
+    holoEntity(Main):toWorld(ang(0,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x3x1_5.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, holoEntity(Main))
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    RelMount = A
+    holoCreate(A, 
+    holoEntity(Main):toWorld(vec(12,0,-5.6)), vec(1),
+    holoEntity(Main):toWorld(ang(0,15,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "")
+    holoScale(A, vec(0.1))
+    holoParent(A, holoEntity(Main))
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(RelMount):toWorld(vec(6,0,-0.5)), vec(1),
+    holoEntity(RelMount):toWorld(ang(0,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x12x1_5.mdl")
+    holoScale(A, vec(1,0.4,0.75))
+    holoParent(A, holoEntity(RelMount))
+    holoMaterial(A,"wtp/metal_2")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(RelMount):toWorld(vec(10,0,-1.3)), vec(1),
+    holoEntity(RelMount):toWorld(ang(0,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/magtrainslocos/cstands/bl2/hornlever.mdl")
+    holoScale(A, vec(1,1,1.5))
+    holoParent(A, holoEntity(RelMount))
+    holoMaterial(A,"wtp/metal_2")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(0,0,1.5),vec(0,0,1),0)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(Main):toWorld(vec(21,0,-6.5)), vec(1),
+    holoEntity(Main):toWorld(ang(0,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/magtrainslocos/cstands/bl2/hornlever.mdl")
+    holoScale(A, vec(1.5,1.5,2))
+    holoParent(A, holoEntity(Main))
+    holoMaterial(A,"wtp/metal_2")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(0,0,2),vec(0,0,1),0)
+}
+
+if(Ang != Throttle){
+    timer("ref",100)
+    if(clk("ref")){
+        Ang = clamp(Ang + (Throttle - Ang) / 2, 0, 10)
+        holoAng(Main,holoEntity(1):toWorld(ang(0,12.5-(45*(Ang/10)),0)))
+        holoAng(RelMount,holoEntity(Main):toWorld(ang(0,10,0)))
+    }
+}else{
+    holoAng(RelMount,holoEntity(Main):toWorld(ang(0,15,0)))
+}
