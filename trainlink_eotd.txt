@@ -1,0 +1,771 @@
+@name Trainlink EOTD
+@inputs HOTOut:array BrakePipe HOTEmergency CounterCycle LeadAxle:entity
+@outputs EOTOut:array Counter MPH EOTMove EmergencyBrake ID Length
+@outputs CounterMode
+@persist MPH Enabled Acceleration O:entity Flash EOTID BP EOTOut:array SVel EVel SPos:vector EPos:vector CntCal Counter CounterMode
+@trigger Enabled CounterMode LeadAxle
+@model models/sprops/cuboids/height06/size_1/cube_6x30x6.mdl
+
+if(first() | dupefinished()){
+    #By Toast
+    #You can operate the EOT by holding the crowbar, looking at it and holding E to turn it on/off.
+    #You can parent this, but most fuctions won't work.
+    
+    Color = vec(140)
+    
+    entity():setAlpha(0)
+    O = owner()
+    #Base
+    A = 1
+    holoCreate(A, entity():toWorld(vec(-2,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cuboids/height06/size_1/cube_6x30x6.mdl")
+    holoScale(A, vec(0.9,1.5,1.2))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    #Bottom chonk
+    A = 2
+    holoCreate(A, entity():toWorld(vec(-16.2,0,-1.2)), vec(1),
+    entity():toWorld(ang(90,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x6x1_5.mdl")
+    holoScale(A, vec(1.6,1.5,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 3
+    holoCreate(A, entity():toWorld(vec(-19.65,-1.2,-1.2)), vec(1),
+    entity():toWorld(ang(90,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl")
+    holoScale(A, vec(1.6,1.1,0.9))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 4
+    holoCreate(A, entity():toWorld(vec(-21.5,-1.2,-0.6)), vec(1),
+    entity():toWorld(ang(90,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl")
+    holoScale(A, vec(1.4,1.1,0.9))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 5
+    holoCreate(A, entity():toWorld(vec(-19.2,1.5,-5.26)), vec(1),
+    entity():toWorld(ang(0,180,90)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/triangles_thin/right/size_0_5/t_rtri_6x6.mdl")
+    holoScale(A, vec(0.75,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 6
+    holoCreate(A, entity():toWorld(vec(-19.2,1.5,2.9)), vec(1),
+    entity():toWorld(ang(0,180,90)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/triangles_thin/right/size_0_5/t_rtri_6x6.mdl")
+    holoScale(A, vec(0.75,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Front plate
+    A = 7
+    holoCreate(A, entity():toWorld(vec(-3,0,-3)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x30x1_5.mdl")
+    holoScale(A, vec(0.8,1.4,1.2))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Reflector
+    A = 8
+    holoCreate(A, entity():toWorld(vec(-8.75,0,-3)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec(220,0,0))
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x12x1_5.mdl")
+    holoScale(A, vec(0.8,1.2,1.3))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/reflective_colorable")
+    
+    #Light
+    A = 9
+    holoCreate(A, entity():toWorld(vec(5,-1,-2)), vec(1),
+    entity():toWorld(ang(90,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/magtrainslocos/functiondisplay.mdl")
+    holoScale(A, vec(0.4))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 10
+    holoCreate(A, holoEntity(9):toWorld(vec(1.9,0,0)), vec(1),
+    holoEntity(9):toWorld(ang(0,90,90)))
+    holoColor(A, vec(255))
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x12x1_5.mdl")
+    holoScale(A, vec(0.4,0.6,0.1))
+    holoParent(A, holoEntity(9))
+    holoMaterial(A,"models//hammy/pcb1")
+    
+    A = 11
+    holoCreate(A, holoEntity(9):toWorld(vec(1.9,-0.75,0)), vec(1),
+    holoEntity(9):toWorld(ang(0,90,90)))
+    holoColor(A, vec(255))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x3x1_5.mdl")
+    holoScale(A, vec(0.4))
+    holoParent(A, holoEntity(9))
+    holoMaterial(A,"models/proppertextures/reflective_colorable")
+    
+    A = 12
+    holoCreate(A, holoEntity(9):toWorld(vec(1.9,0.75,0)), vec(1),
+    holoEntity(9):toWorld(ang(0,90,90)))
+    holoColor(A, vec(255))
+    holoModel(A, "models/sprops/rectangles_thin/size_1/rect_3x3x1_5.mdl")
+    holoScale(A, vec(0.4))
+    holoParent(A, holoEntity(9))
+    holoMaterial(A,"models/proppertextures/reflective_colorable")
+    
+    A = 13
+    holoCreate(A, holoEntity(9):toWorld(vec(2.1,0,0)), vec(1),
+    holoEntity(9):toWorld(ang(0,90,90)))
+    holoColor(A, vec4(255,255,255,75))
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x12x1_5.mdl")
+    holoScale(A, vec(0.45,0.7,0.2))
+    holoParent(A, holoEntity(9))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Light flash
+    A = 16
+    holoCreate(A, holoEntity(9):toWorld(vec(2.6,0,0)), vec(1),
+    holoEntity(9):toWorld(ang(90,0,0)))
+    holoColor(A, vec4(255,0,0,0))
+    holoModel(A, "plane")
+    holoScale(A, vec(5))
+    holoParent(A, holoEntity(9))  
+    holoMaterial(A,"models/proppertextures/lightglow_red")
+    
+    #Antennae
+    A = 17
+    holoCreate(A, entity():toWorld(vec(10,-2,0)), vec(1),
+    entity():toWorld(ang(90,0,0)))
+    holoColor(A, vec(36,36,36))
+    holoModel(A, "models/sprops/misc/domes/size_0/dome_3x6.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 18
+    holoCreate(A, entity():toWorld(vec(10,2,0)), vec(1),
+    entity():toWorld(ang(90,0,0)))
+    holoColor(A, vec(36,36,36))
+    holoModel(A, "models/sprops/misc/domes/size_0/dome_3x6.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Coupler hook
+    A = 19
+    holoCreate(A, entity():toWorld(vec(-19,-4.5,-1)), vec(1),
+    entity():toWorld(ang(90,90,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x12x1_5.mdl")
+    holoScale(A, vec(0.4,0.6,0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 20
+    holoCreate(A, entity():toWorld(vec(-18,-4.5,-1)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/mechanics/robotics/claw2.mdl")
+    holoScale(A, vec(0.07,0.1,0.2))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #BrakePipe readoff
+    A = 21
+    holoCreate(A, entity():toWorld(vec(6,3.4,0)), vec(1),
+    entity():toWorld(ang(0,90,90)))
+    holoColor(A, Color)
+    holoModel(A, "models/magtrainslocos/functiondisplay.mdl")
+    holoScale(A, vec(0.25))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 22
+    holoCreate(A, holoEntity(21):toWorld(vec(1.3,-0.6,0)), vec(1),
+    holoEntity(21):toWorld(ang(0,90,0)))
+    holoColor(A, vec(255))
+    holoModel(A, "models/sprops/cuboids/height48/size_1/cube_48x48x48.mdl")
+    holoScale(A, vec(0.025,0.001,0.04))
+    holoParent(A, holoEntity(21))
+    holoMaterial(A,"models/monkcabdetailpack/speedo/speed_off")
+    
+    A = 23
+    holoCreate(A, holoEntity(21):toWorld(vec(1.3,0.6,0)), vec(1),
+    holoEntity(21):toWorld(ang(0,90,0)))
+    holoColor(A, vec(255))
+    holoModel(A, "models/sprops/cuboids/height48/size_1/cube_48x48x48.mdl")
+    holoScale(A, vec(0.025,0.001,0.04))
+    holoParent(A, holoEntity(21))
+    holoMaterial(A,"models/monkcabdetailpack/speedo/speed_off")
+    
+    A = 24
+    holoCreate(A, holoEntity(21):toWorld(vec(1.2,0,-1.75)), vec(1),
+    holoEntity(21):toWorld(ang(0,90,90)))
+    holoColor(A, vec4(255,255,255,75))
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x12x1_5.mdl")
+    holoScale(A, vec(0.4,1.2,0.2))
+    holoParent(A, holoEntity(21))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #ID number
+    ID = randint(10000,99999)
+    A = 25
+    holoCreate(A, entity():toWorld(vec(2.9,4.5,0)), vec(1),
+    entity():toWorld(ang(90,0,90)))
+    holoColor(A, vec(250))
+    holoModel(A, "models/sprops/rectangles_thin/size_1_5/rect_6x12x1_5.mdl")
+    holoScale(A, vec(0.39,0.5,0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 26
+    holoCreate(A, holoEntity(25):toWorld(vec(1.8,0,0.05)), vec(1),
+    holoEntity(25):toWorld(ang(0,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_"+ID:toString()[1]+".mdl")
+    holoScale(A, vec(0.1,0.1,0.1))
+    holoParent(A, holoEntity(25))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 27
+    holoCreate(A, holoEntity(25):toWorld(vec(0.9,0,0.05)), vec(1),
+    holoEntity(25):toWorld(ang(0,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_"+ID:toString()[2]+".mdl")
+    holoScale(A, vec(0.1,0.1,0.1))
+    holoParent(A, holoEntity(25))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 28
+    holoCreate(A, holoEntity(25):toWorld(vec(0,0,0.05)), vec(1),
+    holoEntity(25):toWorld(ang(0,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_"+ID:toString()[3]+".mdl")
+    holoScale(A, vec(0.1,0.1,0.1))
+    holoParent(A, holoEntity(25))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 29
+    holoCreate(A, holoEntity(25):toWorld(vec(-0.9,0,0.05)), vec(1),
+    holoEntity(25):toWorld(ang(0,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_"+ID:toString()[4]+".mdl")
+    holoScale(A, vec(0.1,0.1,0.1))
+    holoParent(A, holoEntity(25))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 30
+    holoCreate(A, holoEntity(25):toWorld(vec(-1.8,0,0.05)), vec(1),
+    holoEntity(25):toWorld(ang(0,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_"+ID:toString()[5]+".mdl")
+    holoScale(A, vec(0.1,0.1,0.1))
+    holoParent(A, holoEntity(25))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Carry handle
+    A = 31
+    holoCreate(A, entity():toWorld(vec(-5.7,5.9,0)), vec(1),
+    entity():toWorld(ang(0,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/fittings/bend_long_90_1_5.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 32
+    holoCreate(A, entity():toWorld(vec(-15,5.9,0)), vec(1),
+    entity():toWorld(ang(180,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/fittings/bend_long_90_1_5.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 33
+    holoCreate(A, entity():toWorld(vec(-10.35,6.74,0)), vec(1),
+    entity():toWorld(ang(0,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/cylinders/size_1/cylinder_1_5x6.mdl")
+    holoScale(A, vec(0.75,0.75,1.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Air hose
+    A = 34
+    holoCreate(A, entity():toWorld(vec(-5,-1,6)), vec(1),
+    entity():toWorld(ang(95,0,0)))
+    holoColor(A, vec(100))
+    holoModel(A, "models/lazpack/detail/mu_hose_singlefat.mdl")
+    holoScale(A, vec(1))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(0,0,-10),vec(0,0,-1),0)
+    
+    #Handle thingy
+    A = 35
+    holoCreate(A, entity():toWorld(vec(-21,3,-1.5)), vec(1),
+    entity():toWorld(ang(140,0,-90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.6,0.6,0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 36
+    holoCreate(A, holoEntity(35):toWorld(vec(-2,0,1)), vec(1),
+    holoEntity(35):toWorld(ang(20,0,0)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/rectangles_thin/size_0/rect_1_5x6x1_5.mdl")
+    holoScale(A, vec(0.75,0.6,0.6))
+    holoParent(A,holoEntity(35))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Text
+    A = 37
+    holoCreate(A, entity():toWorld(vec(2,-3.3,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_t.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 38
+    holoCreate(A, entity():toWorld(vec(2,-2.5,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_r.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 39
+    holoCreate(A, entity():toWorld(vec(2,-1.7,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_a.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 40
+    holoCreate(A, entity():toWorld(vec(2,-1.075,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_i.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 41
+    holoCreate(A, entity():toWorld(vec(2,-0.5,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_n.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 42
+    holoCreate(A, entity():toWorld(vec(2,0.3,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_l.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 43
+    holoCreate(A, entity():toWorld(vec(2,0.8,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_i.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 44
+    holoCreate(A, entity():toWorld(vec(2,1.4,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_n.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 45
+    holoCreate(A, entity():toWorld(vec(2,2.2,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_k.mdl")
+    holoScale(A, vec(0.075,0.1,0.075))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 46
+    holoCreate(A, entity():toWorld(vec(2.5,2.8,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_trade.mdl")
+    holoScale(A, vec(0.03,0.1,0.03))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 47
+    holoCreate(A, entity():toWorld(vec(-1,-2.3,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_A.mdl")
+    holoScale(A, vec(0.2,0.1,0.2))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 48
+    holoCreate(A, entity():toWorld(vec(-1,0,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_T.mdl")
+    holoScale(A, vec(0.2,0.1,0.2))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 49
+    holoCreate(A, entity():toWorld(vec(-1,2.3,-3.8)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(36))
+    holoModel(A, "models/sprops/misc/alphanum/alphanum_X.mdl")
+    holoScale(A, vec(0.2,0.1,0.2))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Bucket o' bolts
+    
+    #Main plate
+    A = 50
+    holoCreate(A, entity():toWorld(vec(8.5,-3.7,-4)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.06,0.1,0.06))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 51
+    holoCreate(A, entity():toWorld(vec(8.5,3.7,-4)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.06,0.1,0.06))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 52
+    holoCreate(A, entity():toWorld(vec(-3.2,-3.8,-4)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.06,0.1,0.06))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 53
+    holoCreate(A, entity():toWorld(vec(-3.2,3.8,-4)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.06,0.1,0.06))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 54
+    holoCreate(A, entity():toWorld(vec(-14,-2,-4)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.06,0.1,0.06))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 55
+    holoCreate(A, entity():toWorld(vec(-14,2,-4)), vec(1),
+    entity():toWorld(ang(180,90,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.06,0.1,0.06))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #Light cover
+    A = 56
+    holoCreate(A, holoEntity(13):toWorld(vec(0,1.7,0.1)), vec(1),
+    holoEntity(13):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(13))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 57
+    holoCreate(A, holoEntity(13):toWorld(vec(0,-1.7,0.1)), vec(1),
+    holoEntity(13):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(13))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 58
+    holoCreate(A, holoEntity(13):toWorld(vec(-2.2,1,0.1)), vec(1),
+    holoEntity(13):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(13))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 59
+    holoCreate(A, holoEntity(13):toWorld(vec(-2.2,-1,0.1)), vec(1),
+    holoEntity(13):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(13))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 60
+    holoCreate(A, holoEntity(13):toWorld(vec(2.2,1,0.1)), vec(1),
+    holoEntity(13):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(13))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 61
+    holoCreate(A, holoEntity(13):toWorld(vec(2.2,-1,0.1)), vec(1),
+    holoEntity(13):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(13))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    #BrakePipe, ID
+    A = 62
+    holoCreate(A, holoEntity(24):toWorld(vec(-2,3.2,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 63
+    holoCreate(A, holoEntity(24):toWorld(vec(0,3.2,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 64
+    holoCreate(A, holoEntity(24):toWorld(vec(2,3.2,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 65
+    holoCreate(A, holoEntity(24):toWorld(vec(-2,0.5,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 66
+    holoCreate(A, holoEntity(24):toWorld(vec(2,0.5,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 67
+    holoCreate(A, holoEntity(24):toWorld(vec(-2,-3.2,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 68
+    holoCreate(A, holoEntity(24):toWorld(vec(0,-3.2,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    
+    A = 69
+    holoCreate(A, holoEntity(24):toWorld(vec(2,-3.2,0.1)), vec(1),
+    holoEntity(24):toWorld(ang(0,0,90)))
+    holoColor(A, vec(120))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.05,0.1,0.05))
+    holoParent(A, holoEntity(24))
+    holoMaterial(A,"models/proppertextures/acrylic")
+    timer("array",100)
+    
+    spriteEnable(1,0)
+    spriteSpawn(1,"sprites/light_glow02",entity():toWorld(vec(6,0,-6)))
+    spriteSetColor(1,vec(255,0,0))
+    #spriteSetPos(1,entity():toWorld(vec(0)))
+    spriteSetParent(1,entity())
+    spriteSetScale(1,1)
+    
+    Counter = 0
+}
+
+runOnKeys(O,1)
+
+if(O:weapon():type()=="weapon_crowbar"){
+    runOnKeys(O,1)
+    if(changed(O:keyUse()) & O:keyUse() & owner():aimEntity() == entity()){
+        Enabled = !Enabled
+        O:soundPlay(1,1,"buttons/button3.wav")
+        #runOnKeys(O,0)
+    }
+}
+
+if(Enabled){
+    timer("ref",250)
+    if(clk("ref")){
+        BP = round(BrakePipe)
+        VelL = entity():velL():z()
+        MPH = toUnit("mph",abs(VelL))
+    }
+    #Flashing
+    timer("flash",3000)
+    if(clk("flash")){
+        Flash = 1
+        timer("off",250)
+    }
+    if(clk("off")){
+        Flash = 0
+    }
+            
+    holoAlpha(16,Flash ? 250 : 0)
+    spriteEnable(1,Flash ? 1 : 0)
+    
+    holoMaterial(23,"models/monkcabdetailpack/speedo/speed_"+(BP:toString()[BP:toString():explode(""):count()]))
+    holoMaterial(22,"models/monkcabdetailpack/speedo/speed_"+(BP:toString():explode(""):count() >= 2 ? BP:toString()[BP:toString():explode(""):count()-1] : "0"))
+    
+    #HOTD Emergency
+    if(changed(HOTEmergency) & HOTEmergency){
+        print("[EOTD] Head of train emergency switched!")
+        EmergencyBrake = 1
+        }else{
+        EmergencyBrake = 0
+    }
+    
+    #EOTMove
+    if(MPH >= 2){
+        EOTMove = 1
+    }else{
+        EOTMove = 0
+    }
+    
+    #HOT MODES
+    #1 - Accel
+    #2 - Distance
+    #3 - Distance Freeze
+    
+    #if(changed(CounterMode) & CounterMode != 2){timer("countupdate",1000) print("Counter != 2")}
+    
+    
+    
+    #Counter = (EVel - SVel)
+    if(changed(CounterCycle) & CounterCycle){CounterMode += (CounterMode > 1 ? -2 : 1)}
+    
+    if(changed(CounterMode)){
+        #CntCal = SVel = EVel = 0
+    }
+    
+    switch(CounterMode){
+        case 0,
+            if(!CntCal){
+                SVel = MPH
+                timer("sec",1000)
+                CntCal = 1
+            }
+            if(clk("sec")){
+                #print("sec")
+                EVel = abs(MPH)
+                Counter = round(EVel - SVel,1)
+                CntCal = 0
+            }
+        case 1,
+            if(!CntCal){
+                SPos = entity():pos()
+                timer("sec",1000)
+                CntCal = 1
+            }
+            if(clk("sec")){
+                #print("sec")
+                EPos = entity():pos()
+                Counter += round(EPos:distance(SPos)/12)
+                CntCal = 0
+            }
+        case 2,
+            Counter = Counter
+        break
+    }
+    
+}else{
+    Flash = 0
+    #spriteEnable(1,0)
+    holoAlpha(16,0)
+    stoptimer("flash")
+    
+    holoMaterial(22,"models/monkcabdetailpack/speedo/speed_off")
+    holoMaterial(23,"models/monkcabdetailpack/speedo/speed_off")  
+}
+
+EOTOut = array(1,ID,MPH,Counter,BP,EOTMove)
+
+if(changed(Enabled) & Enabled){
+    entity():soundPlay(2,0,"acf_extra/vehiclefx/boost/tcl_turbo.wav")
+    soundPitch(2,100)
+    #soundPitch(3,85)
+    #soundVolume(3,0.2)
+}elseif(changed(Enabled) & !Enabled){
+    soundStop(2,1)
+}
+
+if(changed(LeadAxle)){
+    Length = abs(round(entity():pos():distance(LeadAxle:pos())/12))
+}

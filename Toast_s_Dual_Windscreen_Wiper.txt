@@ -1,0 +1,132 @@
+@name Toast's Dual Windscreen Wiper
+@inputs On
+@outputs Wipe
+@persist Sound:string Color:vector Material:string Coverage Speed SpawnAng AngleOffset Wipe
+@trigger all
+
+if(first() | dupefinished()){
+    
+    Speed = 10 #Setting this too high might cause problems with stopping.
+    SpawnAng = 40
+    AngleOffset = 0
+    
+    Sound = ""
+    Color = vec(30,30,30)
+    Material = "WTP/metal_2"
+    BarLength = 6
+    WiperLength = 6
+    SplitDistance = 20
+    
+    holoCreate(0)
+    holoScale(0,vec(0))
+    holoParent(0, entity())
+    holoPos(0,entity():toWorld(vec(0,-SplitDistance,0)))
+    
+    holoCreate(1)
+    holoScale(1,vec(0))
+    holoParent(1, entity())
+    holoPos(1,entity():toWorld(vec(0,SplitDistance,0)))
+    
+    A = 2
+    holoCreate(A, entity():toWorld(vec(0,-SplitDistance,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.4,0.4,0.4))
+    holoParent(A, 0)  
+    holoMaterial(A,Material) 
+    
+    A = 3
+    holoCreate(A, entity():toWorld(vec(BarLength,-SplitDistance,0.2)), vec(1),
+    entity():toWorld(ang(1.5,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(BarLength/15,0.17,0.05))
+    holoParent(A, 0)  
+    holoMaterial(A,Material) 
+    
+    A = 4
+    holoCreate(A, entity():toWorld(vec(BarLength*2,-SplitDistance,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.3,0.3,0.2))
+    holoParent(A, 0)  
+    holoMaterial(A,Material) 
+    
+    A = 5
+    holoCreate(A, entity():toWorld(vec(BarLength*2,-SplitDistance,-0.13)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(WiperLength/15,0.17,0.1))
+    holoParent(A, 0)  
+    holoMaterial(A,Material) 
+    
+    A = 6
+    holoCreate(A, entity():toWorld(vec(0,SplitDistance,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.4,0.4,0.4))
+    holoParent(A, 1)  
+    holoMaterial(A,Material) 
+    
+    A = 7
+    holoCreate(A, entity():toWorld(vec(BarLength,SplitDistance,0.2)), vec(1),
+    entity():toWorld(ang(1.5,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(BarLength/15,0.17,0.05))
+    holoParent(A, 1)  
+    holoMaterial(A,Material) 
+    
+    A = 8
+    holoCreate(A, entity():toWorld(vec(BarLength*2,SplitDistance,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.3,0.3,0.2))
+    holoParent(A, 1)  
+    holoMaterial(A,Material) 
+    
+    A = 9
+    holoCreate(A, entity():toWorld(vec(BarLength*2,SplitDistance,-0.13)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(WiperLength/15,0.17,0.1))
+    holoParent(A, 1)  
+    holoMaterial(A,Material) 
+    
+    holoCreate(10)
+    holoScale(10,vec(0))
+    holoParent(10, entity())
+
+
+    A = 11
+    holoCreate(A, entity():toWorld(vec(BarLength,0,0.18)), vec(1),
+    entity():toWorld(ang(0,90,1.5)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(SplitDistance/15,0.17,0.05))
+    holoParent(A, 10)  
+    holoMaterial(A,Material) 
+}
+
+if(On | !inrange(Wipe,SpawnAng-1,SpawnAng+1) #[Wipe  (SpawnAng + AngleOffset) - 1]#){
+    timer("refresh",100)
+    if(clk("refresh")){
+            soundPlay(0,0,Sound)
+            Wipe = (sin(curtime() * (Speed*10))*SpawnAng) + AngleOffset
+        }
+}else{
+    Wipe = SpawnAng + AngleOffset
+    soundStop(0)
+}
+   
+
+holoAng(0,entity():toWorld(ang(0,0-Wipe,0)))
+holoAng(1,entity():toWorld(ang(0,0-Wipe,0)))
+holoAng(10,entity():toWorld(ang(0,0-Wipe,0)))
+holoAng(11,entity():toWorld(ang(0,90,0)))

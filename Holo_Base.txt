@@ -1,0 +1,20 @@
+@name Holo Base
+@inputs
+@outputs 
+@persist
+@trigger 
+
+if(first() | dupefinished()){
+    
+    A = 1
+    holoCreate(A, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/trakpak3_rsg/straights/s1024_0fw_0pg_+1024x00000x0000.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+
+}
+

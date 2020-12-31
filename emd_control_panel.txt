@@ -1,0 +1,624 @@
+@name EMD Control Panel
+@inputs Start Stop CycleIsolation CycleLight NumLt ClassLt
+@outputs Start Shutdown Isolation LightPos HdltCtrl IsoSwitch
+@persist EngStart FuelCut NumLight ClassLight
+@trigger 
+@model models/sprops/rectangles_thin/size_2/rect_12x24x1_5.mdl
+
+#Toast
+
+if(first() | dupefinished()){
+    
+    entity():setAlpha(0)
+    
+    A = 1
+    holoCreate(A, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(36,36,36,255))
+    holoModel(A, "models/sprops/rectangles_thin/size_2/rect_12x24x1_5.mdl")
+    holoScale(A, vec(1.05,0.9,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic_dirty")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/sprops/rectangles_thin/size_2/rect_12x24x1_5.mdl")
+    holoScale(A, vec(1.06,0.925,0.95))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic_dirty")
+    
+    #Engine Warnings
+    #Filter Blower Circut
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-10.5,4,0.75)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(10,10,100,255))
+    holoModel(A, "models/monkcabdetailpack/misc/pushbutton.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-10.5,3,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0))),
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/filterblowercircuitopen")
+    
+    #Test
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-7,4,0.75)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(100,100,100,255))
+    holoModel(A, "models/monkcabdetailpack/misc/pushbutton.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-7,3.325,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/test")
+    
+    #Fault
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-5,4,0.75)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(150,150,150,255))
+    holoModel(A, "models/monkcabdetailpack/misc/pushbutton.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-5,3,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/hvgndfault")
+    
+    #Turbo aux pump
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-3,4,0.75)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(10,10,100,255))
+    holoModel(A, "models/monkcabdetailpack/misc/pushbutton.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-3,3,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/turboauxpump")
+    
+    #No battery
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-1,4,0.75)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(70,50,0,255))
+    holoModel(A, "models/monkcabdetailpack/misc/pushbutton.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-1,3,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/nobatterycharge")
+    
+    #Hot
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(1,4,0.75)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(127,0,0,255))
+    holoModel(A, "models/monkcabdetailpack/misc/pushbutton.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(1,3.175,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/hoteng")
+    
+    #Dynamic cut-out
+    
+    A++
+    DynCut = A
+    holoCreate(A, 
+    entity():toWorld(vec(-9,0,0.8)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.3))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/acrylic_dirty")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(DynCut):toWorld(vec(0,0,-0.15)), vec(1),
+    holoEntity(DynCut):toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(255))
+    holoModel(A, "models/magtrainslocos/rotaryswitches/headlight_emd.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, holoEntity(DynCut))
+    holoMaterial(A,"")
+    holoBodygroup(A,2,1)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(DynCut):toWorld(vec(0,1.5,0.1)), vec(1),
+    holoEntity(DynCut):toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(36,36,36,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, holoEntity(DynCut))
+    holoMaterial(A,"titus/dynamicbrakecutout")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(DynCut):toWorld(vec(0,1,0.1)), vec(1),
+    holoEntity(DynCut):toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(36,36,36,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, holoEntity(DynCut))
+    holoMaterial(A,"titus/cutinarrow")
+    holoClipEnabled(A,1,1)
+    holoClip(A,1,vec(-0.1,0,0),vec(1,0,0),0)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(DynCut):toWorld(vec(-1,0,0.1)), vec(1),
+    holoEntity(DynCut):toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(36,36,36,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, holoEntity(DynCut))
+    holoMaterial(A,"titus/cutout")
+    
+    #Fuel cutoff
+    
+    A++
+    FuelCut = A
+    holoCreate(A, 
+    entity():toWorld(vec(1.5,-2,0.8)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/emrgfuelcutoffandenginestop")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(FuelCut):toWorld(vec(0.1,0,0)), vec(1),
+    holoEntity(FuelCut):toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(160,21,36,255))
+    holoModel(A, "models/titus's_propper_model_pack_2.4/propper/buttons/pushbutton.mdl")
+    holoScale(A, vec(1.5))
+    holoParent(A, holoEntity(FuelCut))
+    holoMaterial(A,"")
+    holoEntity(A):setSubMaterial(2,"models/proppertextures/cabmetal_gray")
+    holoEntity(A):setSubMaterial(3,"models/proppertextures/acrylic_dirty")
+    
+    #Engine start
+    
+    A++
+    EngStart = A
+    holoCreate(A, 
+    entity():toWorld(vec(6,-2,0.8)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(36,36,36,255))
+    holoModel(A, "models/titus's_propper_model_pack_2.4/propper/buttons/pushbutton.mdl")
+    holoScale(A, vec(1.5))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    holoEntity(A):setSubMaterial(2,"models/proppertextures/cabmetal_gray")
+    holoEntity(A):setSubMaterial(3,"models/proppertextures/acrylic_dirty")
+    
+    A++
+    holoCreate(A, 
+    holoEntity(EngStart):toWorld(vec(1.55,0,0)), vec(1),
+    holoEntity(EngStart):toWorld(ang(0,0,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.8))
+    holoParent(A, holoEntity(EngStart))
+    holoMaterial(A,"titus/enginestart")
+    
+    #Light switches
+    #Number lights
+    
+    A++
+    NumLight = A
+    holoCreate(A, 
+    entity():toWorld(vec(-6,0.5,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/monkcabdetailpack/buttons/sliderswitch.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-6,-1,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/numberlights")
+    
+    #Class lights
+    
+    A++
+    ClassLight = A
+    holoCreate(A, 
+    entity():toWorld(vec(-4.5,0.5,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/monkcabdetailpack/buttons/sliderswitch.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-4.5,-0.9,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/classlts")
+    
+    #Engine room
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-3,0.5,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/monkcabdetailpack/buttons/sliderswitch.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-3,2,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/engroom")
+    
+    #Platform
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-2.1,0.5,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/monkcabdetailpack/buttons/sliderswitch.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-2.1,2,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/platform")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-2.5,-0.9,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/lights")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-1.25,0.8,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/onarrow")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-1.25,0.2,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.5))
+    holoParent(A, entity())
+    holoMaterial(A,"titus/offarrow")
+    
+    #Horn breaker
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(4,2.5,0.6)), vec(1),
+    entity():toWorld(ang(0,180,90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/titus's_propper_model_pack_2.4/propper/circuitbreakers/breaker_dual.mdl")
+    holoScale(A, vec(1))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    holoBodygroup(A,1,1)
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(4,4,0.9)), vec(1),
+    entity():toWorld(ang(0,-90,0))),
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(1)*0.7)
+    holoParent(A, entity())
+    holoMaterial(A,"titus/horn")
+    
+    #Headlight control dial
+    
+    A++
+    HdltCtrl = A
+    holoCreate(A, 
+    entity():toWorld(vec(9,2.5,0.8)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/magtrainslocos/rotaryswitches/headlight_emd.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    holoBodygroup(A,2,1)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(HdltCtrl):toWorld(vec(0.4,0,0)), vec(1),
+    holoEntity(HdltCtrl):toWorld(ang(0,0,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.55))
+    holoParent(A, holoEntity(HdltCtrl))
+    holoMaterial(A,"titus/headlightcontrol")
+    
+    #Isolation switch
+    
+    A++
+    IsoSwitch = A
+    holoCreate(A, 
+    entity():toWorld(vec(9,-2.5,0.8)), vec(1),
+    entity():toWorld(ang(0,-90,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/magtrainslocos/rotaryswitches/headlight_emd.mdl")
+    holoScale(A, vec(0.75))
+    holoParent(A, entity())
+    holoMaterial(A,"")
+    holoBodygroup(A,1,2)
+    holoBodygroup(A,2,1)
+    
+    A++
+    holoCreate(A, 
+    holoEntity(IsoSwitch):toWorld(vec(0.4,0,0)), vec(1),
+    holoEntity(IsoSwitch):toWorld(ang(0,0,0)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "plane")
+    holoScale(A, vec(0.55))
+    holoParent(A, holoEntity(IsoSwitch))
+    holoMaterial(A,"titus/isolationswitch")
+    
+    #Screws/bolts
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-10,5,0.8)), vec(1),
+    entity():toWorld(ang(0,0,90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-6,5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-2,5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(2,5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(6,5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(10,5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-10,-5,0.8)), vec(1),
+    entity():toWorld(ang(0,0,90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-6,-5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-2,-5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(2,-5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(6,-5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(10,-5,0.8)), vec(1),
+    entity():toWorld(ang(0,randint(0,180),90)))
+    holoColor(A, vec4(200,200,200,255))
+    holoModel(A, "models/unionsparts/bolt_1.mdl")
+    holoScale(A, vec(0.1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/cabmetal_gray")
+    
+    #print(A)
+}
+
+holoBodygroup(EngStart,1,Start ? 1 : 0)
+holoBodygroup(FuelCut+1,1,Stop ? 1 : 0)
+
+if(CycleIsolation){Isolation = !Isolation}
+if(CycleLight){LightPos = LightPos + (LightPos > 4 ? -6 : 2)}
+
+holoBodygroup(IsoSwitch,1,Isolation ? 0 : 2)
+holoBodygroup(HdltCtrl,1,LightPos)
+
+if(ClassLt){holoAnim(ClassLight,"off")}elseif(!ClassLt){holoAnim(ClassLight,"idle")}
+if(NumLt){holoAnim(NumLight,"off")}else{holoAnim(NumLight,"idle")}
+
+if(Start){Start = 1}else{Start = 0}
+if(Stop){Shutdown = 1}else{Shutdown = 0}
+if(Isolation){Isolation = 1}else{Isolation = 0}
+
+if(changed(Start | Stop)){
+    entity():soundPlay(0,0,"titus's locomotive sound expansion pack/resources/gp38-2/cab/controls/plunger/s_gp38-2pungersmalldown0"+randint(1,8):toString()+".wav")
+}elseif(changed(!Start | !Stop)){
+    entity():soundPlay(0,0,"titus's locomotive sound expansion pack/resources/gp38-2/cab/controls/plunger/s_gp38-2pungersmallup0"+randint(1,8):toString()+".wav")
+}
+
+if(changed(Isolation) | (changed(LightPos) & CycleLight)){
+    entity():soundPlay(1,0,"titus's locomotive sound expansion pack/resources/gp38-2/cab/controls/largerotary/s_gp38-2rotarylargeoff0"+randint(1,8):toString()+".wav")
+}
+
+if(changed(NumLt | ClassLt)){
+    entity():soundPlay(2,0,"titus's locomotive sound expansion pack/resources/gp38-2/cab/controls/slideswitch/s_gp38-2rockerslideona0"+randint(1,8):toString()+".wav")
+}
+
+
+
+

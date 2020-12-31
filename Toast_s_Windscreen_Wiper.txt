@@ -1,0 +1,107 @@
+@name Toast's Windscreen Wiper
+@inputs On
+@outputs Wipe
+@persist Sound:string Color:vector Material:string Coverage Speed SpawnAng AngleOffset Wipe
+@trigger all
+
+if(first() | dupefinished()){
+    
+    Speed = 20 #Setting this too high might cause problems with stopping.
+    SpawnAng = -15
+    AngleOffset = 0
+    
+    Sound = ""
+    Color = vec(30,30,30)
+    Material = "WTP/metal_2"
+    BarLength = 8
+    WiperLength = 9
+    
+    holoCreate(0)
+    holoScale(0,vec(0))
+    holoParent(0, entity())
+    holoPos(0,entity():toWorld(vec(0,0.4,0)))
+    
+    holoCreate(1)
+    holoScale(1,vec(0))
+    holoParent(1, entity())
+    holoPos(1,entity():toWorld(vec(0,-0.3,0)))
+    
+    A = 2
+    holoCreate(A, entity():toWorld(vec(0,0.4,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.4,0.4,0.4))
+    holoParent(A, entity())  
+    holoMaterial(A,Material) 
+    
+    A = 3
+    holoCreate(A, entity():toWorld(vec(0,-0.3,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/cylinders/size_2/cylinder_3x3.mdl")
+    holoScale(A, vec(0.3,0.3,0.4))
+    holoParent(A, entity())  
+    holoMaterial(A,Material) 
+    
+    A = 4
+    holoCreate(A, entity():toWorld(vec(BarLength,0.4,0.2)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(BarLength/15,0.1,0.05))
+    holoParent(A, 0)  
+    holoMaterial(A,Material) 
+    
+    A = 5
+    holoCreate(A, entity():toWorld(vec(BarLength,-0.3,0.2)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(BarLength/15,0.06,0.05))
+    holoParent(A, 1)  
+    holoMaterial(A,Material) 
+    
+    holoCreate(6)
+    holoScale(6,vec(0))
+    holoParent(6, entity())
+    holoPos(6,entity():toWorld(vec(0,0,0)))
+    
+    A = 7
+    holoCreate(A, entity():toWorld(vec(BarLength*2,0,0.2)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(0.04,0.08,0.06))
+    holoParent(A, 6)  
+    holoMaterial(A,Material) 
+    
+    A = 8
+    holoCreate(A, entity():toWorld(vec(BarLength*2,0.3,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, Color)
+    holoModel(A, "models/sprops/rectangles/size_1/rect_3x30x3.mdl")
+    holoScale(A, vec(WiperLength/15,0.13,0.09))
+    holoParent(A, 6)  
+    holoMaterial(A,Material) 
+    Wipe = SpawnAng
+}
+
+if(On | !inrange(Wipe,SpawnAng-1,SpawnAng+1) #[Wipe  (SpawnAng + AngleOffset) - 1]#){
+    timer("refresh",100)
+    if(clk("refresh")){
+            soundPlay(0,0,Sound)
+            Wipe = (sin(curtime() * (Speed*10))*SpawnAng) + AngleOffset
+        }
+}else{
+    Wipe = SpawnAng + AngleOffset
+    soundStop(0)
+}
+    
+
+holoAng(0,entity():toWorld(ang(0,-Wipe,0)))
+holoAng(1,entity():toWorld(ang(0,-Wipe,0)))
+holoAng(6,entity():toWorld(ang(0,-Wipe,0)))
+
+holoAng(7,entity():toWorld(ang(0,90,0)))
+holoAng(8,entity():toWorld(ang(0,0,0)))
