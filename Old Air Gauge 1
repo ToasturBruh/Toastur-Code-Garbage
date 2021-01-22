@@ -1,0 +1,53 @@
+@name Old Air Gauge 1
+@inputs BrakeInfo:array
+@outputs 
+@persist Ang1 Ang2
+@trigger 
+@model models/anytrains/props/detail/gauge_old_1.mdl
+
+#Toast
+
+if(first() | dupefinished()){
+    
+    entity():setSubMaterial(2,"models/gsgtrainprops/cab/gauge_air_pitanco_160_1_black")
+    
+    A = 1
+    holoCreate(A, 
+    entity():toWorld(vec(0,0,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/anytrains/props/detail/gauge_old_1_pointer.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"wtp/metal_2")
+    
+    A = 2
+    holoCreate(A, 
+    entity():toWorld(vec(0,0,0.1)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(255,30,30,255))
+    holoModel(A, "models/anytrains/props/detail/gauge_old_1_pointer.mdl")
+    holoScale(A, vec(1,1,1))
+    holoParent(A, entity())
+    holoMaterial(A,"wtp/metal_2")
+
+}
+
+MainRes = BrakeInfo[1,number]
+EqRes = BrakeInfo[2,number]
+
+if(Ang1 != EqRes){
+    timer("ref",100)
+    if(clk("ref")){
+        Ang1 = clamp(Ang1 + (EqRes - Ang1) / 2, 0, 160)
+        holoAng(1,entity():toWorld(ang(0,-Ang1*1.34,0)))
+    }
+}
+
+if(Ang2 != MainRes){
+    timer("ref",100)
+    if(clk("ref")){
+        Ang2 = clamp(Ang2 + (MainRes - Ang2) / 2, 0, 160)
+        holoAng(2,entity():toWorld(ang(0,-Ang2*1.34,0)))
+    }
+}
