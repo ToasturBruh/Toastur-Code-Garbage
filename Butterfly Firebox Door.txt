@@ -1,14 +1,16 @@
 @name Butterfly Firebox Door
-@inputs Open Firebox:vector
-@outputs 
-@persist [OpenSound CloseSound]:string Ang
+@inputs Open Firebox:vector Warmup EngineActive
+@outputs Flame Cinders Closed
+@persist [OpenSound CloseSound]:string FireSound:string Ang Closed FireboxCOL:vector
 @model models/props_junk/MetalBucket02a.mdl
-@trigger Open
+@trigger Open Warmup EngineActive
 
 if(first() | dupefinished()){
     
-    OpenSound = ""
-    CloseSound = ""
+    OpenSound = "doors/door_metal_large_open1.wav"
+    CloseSound = "doors/door_metal_large_close2.wav"
+    
+    FireSound = "ambient/fire/fire_med_loop1.wav"
     
     A = 1
     holoCreate(A, entity():toWorld(vec(11.5,0,-9)), vec(1),
@@ -46,7 +48,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(1))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     
     A = 5
     holoCreate(A, holoEntity(1):toWorld(vec(-7,-12,-1.6)), vec(1),
@@ -55,7 +57,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(1))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     
     A = 6
     holoCreate(A, holoEntity(1):toWorld(vec(-15,-12,-1.6)), vec(1),
@@ -64,7 +66,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(1))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     
     A = 7
     holoCreate(A, holoEntity(1):toWorld(vec(-20,-2.9,-1.6)), vec(1),
@@ -73,7 +75,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(1))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     #----------------
     A = 8
     holoCreate(A, entity():toWorld(vec(11.5,0,-9)), vec(1),
@@ -111,7 +113,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(8))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     
     A = 12
     holoCreate(A, holoEntity(8):toWorld(vec(-7,12,-1.6)), vec(1),
@@ -120,7 +122,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(8))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     
     A = 13
     holoCreate(A, holoEntity(8):toWorld(vec(-15,12,-1.6)), vec(1),
@@ -129,7 +131,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(8))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     
     A = 14
     holoCreate(A, holoEntity(8):toWorld(vec(-20,2.9,-1.6)), vec(1),
@@ -138,7 +140,7 @@ if(first() | dupefinished()){
     holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
     holoScale(A, vec(0.2,0,0.2))
     holoParent(A, holoEntity(8))  
-    holoMaterial(A,"gulch/lava") 
+    holoMaterial(A,"gulch/gulch_crystal_white") 
     #----------------
     A = 15
     holoCreate(A, entity():toWorld(vec(13,0,-9)), vec(1),
@@ -175,34 +177,81 @@ if(first() | dupefinished()){
     holoScale(A, vec(1))
     holoParent(A, holoEntity(16))  
     holoMaterial(A,"models/proppertextures/acrylic_grimey") 
+    
+    A = 19
+    holoCreate(A, entity():toWorld(vec(0,0,-5)), vec(1),
+    entity():toWorld(ang(0,0,180)))
+    holoColor(A, vec4(0,0,0,255))
+    holoModel(A, "models/sprops/misc/domes/size_4/dome_48x30.mdl")
+    holoScale(A, vec(-0.7))
+    holoParent(A, entity())  
+    holoMaterial(A,"gulch/gulch_crystal_white") 
+    
 }
+interval(250)
+
 
 if(Ang != Open){
     timer("door",100)
     if(clk("door")){
-    Ang = clamp( Ang + ( Open - Ang ) / 4, 0, 1 )
-    holoAng(1,entity():toWorld(ang(0,Ang*45,0)))
-    holoAng(8,entity():toWorld(ang(0,-Ang*45,0)))
-    holoAng(16,entity():toWorld(ang(0,45-Ang*45,90)))
+        Ang += clamp(Ang < Open ? 0.25 : -0.25 , -1 , 1)
+        holoAng(1,entity():toWorld(ang(0,Ang*45,0)))
+        holoAng(8,entity():toWorld(ang(0,-Ang*45,0)))
+        holoAng(16,entity():toWorld(ang(0,45-Ang*45,90)))
     }
 }
-if(Open & ~Open){
-        entity():soundPlay(1,0,OpenSound)
-        Firebox = vec(0,0,0)
-    }elseif(!Open & ~Open){
-        entity():soundPlay(1,0,CloseSound)
-        Firebox = Firebox
+
+if(Ang < 0.5){
+    Closed = 1
+}else{Closed = 0}
+
+
+
+if(changed(Closed) & Closed){
+    
+    entity():soundPlay(1,0,CloseSound)
+    soundStop(2)
+    
 }
-if(Firebox){
-    timer("refresh",250)
+
+if(changed(Open) & Open){
+    entity():soundPlay(1,0,OpenSound)
+    if(EngineActive | Warmup){
+        holoEntity(1):soundPlay(2,0,FireSound)
+    }
+    
 }
-if(clk("refresh")){
-    holoColor(4,Firebox)
-    holoColor(5,Firebox)
-    holoColor(6,Firebox)
-    holoColor(7,Firebox)
-    holoColor(11,Firebox)
-    holoColor(12,Firebox)
-    holoColor(13,Firebox)
-    holoColor(14,Firebox)
+#[elseif(Ang <= 0.1 & changed(Ang)){
+    entity():soundPlay(1,0,CloseSound)
+    soundStop(2)
+    Firebox = Firebox
+}]#
+
+if(Open & (EngineActive | Warmup)){
+    Flame = 1
+    if(Warmup){
+        Cinders = 1
+    }else{
+        Cinders = 0
+    }
+}else{
+    Cinders = 0
+    Flame = 0
+}
+
+if(EngineActive | Warmup){
+    timer("fboxrefresh",250)
+}
+
+if(EngineActive | Warmup){if(Open){FireboxCOL = vec(0)}elseif(Closed){FireboxCOL = Firebox}}else{FireboxCOL = vec(0)}
+if(clk("fboxrefresh")){
+    holoColor(4,FireboxCOL)
+    holoColor(5,FireboxCOL)
+    holoColor(6,FireboxCOL)
+    holoColor(7,FireboxCOL)
+    holoColor(11,FireboxCOL)
+    holoColor(12,FireboxCOL)
+    holoColor(13,FireboxCOL)
+    holoColor(14,FireboxCOL)
+    holoColor(19,Firebox)
 }
