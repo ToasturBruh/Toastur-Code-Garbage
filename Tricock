@@ -1,0 +1,145 @@
+@name Tricock Waterglass
+@inputs Water
+@outputs 
+@persist 
+@trigger 
+@model models/sprops/cylinders/size_2/cylinder_3x12.mdl
+
+if(first() | dupefinished()){
+    
+    entity():setAlpha(0)
+    
+    #Valves
+    
+    ValveMat = "models/proppertextures/brass"
+    GlassMat = "models/proppertextures/aluminum"
+    
+    #Valve base
+    
+    ValveBody = p2mCreate(
+    entity():toWorld(vec(0)),
+    entity():toWorld(ang(0)),1,1)
+    
+    ValveBody:p2mPushModel("models/sprops/cylinders/size_2/cylinder_3x6.mdl",vec(),ang(),vec(1,1,1.5))
+    ValveBody:p2mPushModel("models/sprops/misc/domes/size_0/dome_3x1_5.mdl",vec(0,0,4.5),ang(0,0,0),vec(1,1,1))
+    ValveBody:p2mPushModel("models/sprops/misc/domes/size_0/dome_3x1_5.mdl",vec(0,0,-4.5),ang(180,0,0),vec(1,1,1))
+    
+    ValveBody:p2mPushModel("models/props_pipes/valve001.mdl",vec(0,0,2.5),ang(0,90,90),vec(0.1))
+    ValveBody:p2mPushModel("models/props_pipes/valve001.mdl",vec(0,0,0),ang(0,45,90),vec(0.1))
+    ValveBody:p2mPushModel("models/props_pipes/valve001.mdl",vec(0,0,-2.5),ang(0,0,90),vec(0.1))
+    
+    ValveBody:p2mBuild()
+    ValveBody:setMaterial(ValveMat)
+    ValveBody:setColor(vec(255,255,255))
+    ValveBody:parentTo(entity())
+    
+    A = 0
+    
+    #Valves
+    
+    A++
+    holoCreate(A, 
+    ValveBody:toWorld(vec(2,0,2.5)), vec(1),
+    ValveBody:toWorld(ang(0,90,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/props_pipes/valvewheel002.mdl")
+    holoScale(A, vec(0.2))
+    holoParent(A, ValveBody)
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    ValveBody:toWorld(vec(1.5,-1.5,0)), vec(1),
+    ValveBody:toWorld(ang(0,45,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/props_pipes/valvewheel002.mdl")
+    holoScale(A, vec(0.2))
+    holoParent(A, ValveBody)
+    holoMaterial(A,"")
+    
+    A++
+    holoCreate(A, 
+    ValveBody:toWorld(vec(0,-2.5,-2.5)), vec(1),
+    ValveBody:toWorld(ang(0,0,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/props_pipes/valvewheel002.mdl")
+    holoScale(A, vec(0.2))
+    holoParent(A, ValveBody)
+    holoMaterial(A,"")
+    
+    #Glass
+    
+    GlassBody = p2mCreate(
+    entity():toWorld(vec(-2,-2,0)),
+    entity():toWorld(ang(0)),1,1)
+    
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x6.mdl",vec(0,-0.7,0),ang(0,0,0),vec(0.25,0.25,1))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x6.mdl",vec(0,0.7,0),ang(0,0,0),vec(0.25,0.25,1))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x6.mdl",vec(-0.7,0,0),ang(0,0,0),vec(0.25,0.25,1))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x6.mdl",vec(0.7,0,0),ang(0,0,0),vec(0.25,0.25,1))
+    
+    GlassBody:p2mPushModel("models/sprops/geometry/t_fdisc_12.mdl",vec(0,0,3),ang(0,0,90),vec(0.15,0.25,0.15))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x3.mdl",vec(0,0,4.34),ang(0,0,0),vec(0.6,0.6,0.3))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x3.mdl",vec(0.5,0.5,4.34),ang(0,-45,90),vec(0.3,0.3,0.5))
+    GlassBody:p2mPushModel("models/sprops/geometry/fhex_12.mdl",vec(0,0,3.5),ang(0,0,90),vec(0.1,0.25,0.115))
+    
+    GlassBody:p2mPushModel("models/sprops/geometry/t_fdisc_12.mdl",vec(0,0,-3),ang(0,0,90),vec(0.15,0.25,0.15))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x3.mdl",vec(0,0,-4.34),ang(0,0,0),vec(0.6,0.6,0.3))
+    GlassBody:p2mPushModel("models/sprops/cylinders/size_1/cylinder_1_5x3.mdl",vec(0.5,0.5,-4.34),ang(0,-45,90),vec(0.3,0.3,0.5))
+    GlassBody:p2mPushModel("models/sprops/geometry/fhex_12.mdl",vec(0,0,-3.5),ang(0,0,90),vec(0.1,0.25,0.115))
+    
+    GlassBody:p2mBuild()
+    GlassBody:setMaterial(GlassMat)
+    GlassBody:setColor(vec(255,255,255))
+    GlassBody:parentTo(entity())
+    
+    A++
+    holoCreate(A, 
+    entity():toWorld(vec(-2,-2,0)), vec(1),
+    entity():toWorld(ang(0,0,0)))
+    holoColor(A, vec4(255,255,255,150))
+    holoModel(A, "models/sprops/cylinders/size_1/cylinder_1_5x6.mdl")
+    holoScale(A, vec(0.55,0.55,1))
+    holoParent(A, entity())
+    holoMaterial(A,"models/proppertextures/glass_clear")
+    #[
+    A++
+    holoCreate(A, 
+    GlassBody:toWorld(vec(0,0,-3)), vec(1),
+    GlassBody:toWorld(ang(0,0,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/sprops/geometry/t_fdisc_12.mdl")
+    holoScale(A, vec(0.15,0.25,0.15))
+    holoParent(A, GlassBody)
+    holoMaterial(A,GlassMat)
+    
+    A++
+    holoCreate(A, 
+    GlassBody:toWorld(vec(0,0,-3.5)), vec(1),
+    GlassBody:toWorld(ang(0,0,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/sprops/geometry/fhex_12.mdl")
+    holoScale(A, vec(0.1,0.25,0.115))
+    holoParent(A, GlassBody)
+    holoMaterial(A,GlassMat)
+    
+    A++
+    holoCreate(A, 
+    GlassBody:toWorld(vec(0,0,-4.34)), vec(1),
+    GlassBody:toWorld(ang(0,0,0)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/sprops/cylinders/size_1/cylinder_1_5x3.mdl")
+    holoScale(A, vec(0.6,0.6,0.3))
+    holoParent(A, GlassBody)
+    holoMaterial(A,GlassMat)
+    
+    A++
+    holoCreate(A, 
+    GlassBody:toWorld(vec(0.5,0.5,-4.34)), vec(1),
+    GlassBody:toWorld(ang(0,-45,90)))
+    holoColor(A, vec4(255,255,255,255))
+    holoModel(A, "models/sprops/cylinders/size_1/cylinder_1_5x3.mdl")
+    holoScale(A, vec(0.3,0.3,0.5))
+    holoParent(A, GlassBody)
+    holoMaterial(A,GlassMat)]#
+}
