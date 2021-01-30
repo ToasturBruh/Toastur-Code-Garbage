@@ -1,0 +1,23 @@
+@name Mesh Base
+@inputs Base:entity
+@outputs 
+@persist 
+@trigger 
+
+if(changed(Base) | first() | dupefinished()){
+    
+    if(!->Base){
+        Base = entity()
+    }
+    
+    P2M1 = p2mCreate(
+    Base:toWorld(vec(0)),
+    Base:toWorld(ang(0)),1,1)
+    
+    P2M1:p2mPushModel("models/sprops/misc/origin.mdl",vec(0,0,0),ang(0,0,0),vec(1,1,1))
+    
+    P2M1:p2mBuild()
+    P2M1:setMaterial("sprops/sprops_grid")
+    P2M1:setColor(vec(255,255,255))
+    P2M1:parentTo(Base)
+}
