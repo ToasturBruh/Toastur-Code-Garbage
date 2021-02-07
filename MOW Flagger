@@ -13,6 +13,8 @@ if(first() | dupefinished()){
     #Right click to place.
     #Left click to delete.
     #R to cycle flag types.
+    #Type .delete in chat to delete all placed flags and E2.
+    
     #There is no config, don't touch anything.
     
     Type = 0
@@ -141,16 +143,6 @@ if(first() | dupefinished()){
                 break
             }
             
-            #[
-            A++
-            holoCreate(A, 
-            holoEntity(Point):toWorld(vec(0,0,9)), vec(1),
-            holoEntity(Point):toWorld(ang(90,0,0)))
-            holoModel(A,"models/sprops/cuboids/height12/size_1/cube_12x18x12.mdl")
-            holoMaterial(A,"models/debug/debugwhite")
-            holoAlpha(A,50)
-            HitBoxes:pushNumber(A)
-            ]#
             #print(Spawn:id())
             HitBoxes:pushNumber(Spawn:id())
             #print(HitBoxes)
