@@ -152,7 +152,6 @@ if(first() | dupefinished()){
     function void flagDelete(DelKey){
         if(changed(DelKey) & DelKey){
             local LEnt = owner():aimEntity()
-            findToArray()
             for(I = 0, HitBoxes:count()){
                 I++
                 local CurID = HitBoxes[I,number]
