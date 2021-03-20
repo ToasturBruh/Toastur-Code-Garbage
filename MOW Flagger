@@ -64,7 +64,7 @@ if(first() | dupefinished()){
             local Pos = holoEntity(1):pos()
             Spawn = propSpawn("models/sprops/cuboids/height36/size_0/cube_18x18x36.mdl",Pos,holoEntity(Point):toWorld(ang(0,0,0)),1)
             Spawn:setMaterial("models/proppertextures/invisible")
-            Spawn:setNoCollideAll()
+            noCollideAll(Spawn,1)
             
             A++
             holoCreate(A, 
@@ -152,6 +152,7 @@ if(first() | dupefinished()){
     function void flagDelete(DelKey){
         if(changed(DelKey) & DelKey){
             local LEnt = owner():aimEntity()
+            findToArray()
             for(I = 0, HitBoxes:count()){
                 I++
                 local CurID = HitBoxes[I,number]
