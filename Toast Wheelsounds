@@ -1,0 +1,175 @@
+@name Toast Wheelsounds
+@inputs 
+@outputs 
+@persist E:entity Keyword:string Radius Vel Moving Slack
+@persist S1 S2 M H SL
+@persist Vol1 Vol2 Vol3
+@persist Pit1 Pit2 Pit3
+@trigger 
+
+if(first() | dupefinished()){
+    
+    Radius = 1500
+    Keyword = "barber" 
+    Slack = 1 #The slack sounds might be a little janky, but I think they're cool.
+    
+    #I wouldn't suggest changing the sounds.
+    SlowSpeed = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/perfect/s_freightperfectwheel01.wav" 
+    SlowSpeed2 = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/defective/s_freightdefectivewheel01.wav"
+    MedSpeed = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/defective/s_freightdefectivewheel04.wav"
+    HighSpeed = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/rumble/s_autorackrumbled11.wav"
+    
+    #---------------------------------------------------------
+    
+    A = 1
+    S1 = A
+    holoCreate(A, 
+    owner():toWorld(vec(0,0,0)),vec(1),owner():toWorld(ang(0,0,0)))
+    holoScale(A, vec(0))
+    holoParent(A, owner())
+    
+    A++
+    S2 = A
+    holoCreate(A, 
+    owner():toWorld(vec(0,0,0)),vec(1),owner():toWorld(ang(0,0,0)))
+    holoScale(A, vec(0))
+    holoParent(A, owner())
+    
+    A++
+    M = A
+    holoCreate(A, 
+    owner():toWorld(vec(0,0,0)),vec(1),owner():toWorld(ang(0,0,0)))
+    holoScale(A, vec(0))
+    holoParent(A, owner())
+    
+    A++
+    H = A
+    holoCreate(A, 
+    owner():toWorld(vec(0,0,0)),vec(1),owner():toWorld(ang(0,0,0)))
+    holoScale(A, vec(0))
+    holoParent(A, owner())
+    
+    A++
+    SL = A
+    holoCreate(A, 
+    owner():toWorld(vec(0,0,0)),vec(1),owner():toWorld(ang(0,0,0)))
+    holoScale(A, vec(0))
+    holoParent(A, owner())
+    
+    holoEntity(S1):soundPlay(0,0,SlowSpeed)
+    soundVolume(0,0)
+    
+    holoEntity(S2):soundPlay(1,0,SlowSpeed2)
+    soundVolume(1,0)
+    
+    holoEntity(M):soundPlay(2,0,MedSpeed)
+    soundVolume(2,0)
+    
+    holoEntity(H):soundPlay(3,0,HighSpeed)
+    soundVolume(3,0)
+    
+    Vol1 = 0
+    Vol2 = 0
+    Vol3 = 0
+    Pit1 = 90
+    Pit2 = 90
+    Pit3 = 90
+    
+    findIncludeClass("prop_physics")
+}
+timer("find",500)
+timer("think",100)
+
+if(clk("find")){
+    findInSphere(owner():pos(),Radius)
+    findClipToModel(Keyword)
+    findSortByDistance(owner():pos())
+    E = find()
+    #print("Found: "+E:toString())
+}
+  
+    
+if(clk("think")){
+    
+    Dist = owner():pos():distance(E:pos())
+    Vel = E:vel():length()
+    #print(Vel)
+    
+    if(round(Vel) > 0){
+        Vol1 = (Vel/500)
+        Pit1 = 90 + (Vol1*20)
+        
+        if(Vel > 250){
+            Vol2 = clamp(((Vel*0.8)-250)/100,0,1)
+            Pit2 = 90 + (Vol1*20)
+        }else{
+            Vol2 = 0
+        }
+        
+        if(Vel > 650){
+            Vol3 = clamp((Vel-650)/100,0,1)
+            Pit3 = 90 + (Vol3*10)
+        }else{
+            Vol3 = 0
+        }
+    }else{
+        Vol1 = 0
+        Vol2 = 0
+        Vol3 = 0
+    }
+    
+    if(Dist > Radius-750){
+        Dropoff = 1-((Dist-(Radius-750))/750)
+    }else{
+        Dropoff = 1
+    }
+    #[
+    if(Vel > 400){
+        Cycle1 = 1-clamp(1-((Vel-400)/400),0,1)
+    }else{
+        Cycle1 = 1
+    }
+    ]#
+    local Sine = (sin(curtime()*(Vel)/0.25)+1)/2
+    
+    #print((Sine))
+    
+    #print(findClipToModel(Keyword))
+    #print(round(Vel))
+    
+    if(findClipToModel(Keyword) >= 3 & Slack){
+        Moving = Vel > 5 ? 1 : 0
+    }else{
+        Moving = 0
+    }
+    #print(Moving)
+    if(changed(Moving) & Moving & ($Moving > 0) & Vel < 25){
+        holoEntity(SL):soundPlay(4,0,"titus's locomotive sound expansion pack/resources/railvehicle/buckeyecoupling/resources/buckeye/s_buckeyeslack"+randint(1,8):toString()+".wav")
+    }
+    
+    if(Vel == 0){
+        soundVolume(0,0)
+        soundPitch(0,90)
+        
+        soundVolume(1,0)
+        soundPitch(1,90)
+        
+        soundVolume(2,0)
+        soundPitch(2,90)
+        
+        soundVolume(3,0)
+        soundPitch(3,90)
+    }else{
+        soundVolume(0,((clamp(Vol1-Vol2,0,1))*Dropoff)*0.3)
+        soundPitch(0,Pit1)
+        
+        soundVolume(1,((clamp(Vol1-Vol2,0,1))*Dropoff))
+        soundPitch(1,Pit1)
+        
+        soundVolume(2,(Vol2)*Dropoff)
+        soundPitch(2,Pit2*1.25)
+        
+        soundVolume(3,(Vol3*0.75)*Dropoff)
+        soundPitch(3,Pit3)
+    }
+}
