@@ -1,6 +1,6 @@
 @name Toast Wheelsounds
 @inputs 
-@outputs 
+@outputs Vel
 @persist E:entity Keyword:string Radius Vel Moving Slack
 @persist S1 S2 M H SL
 @persist Vol1 Vol2 Vol3
@@ -12,14 +12,17 @@ if(first() | dupefinished()){
     Radius = 1500
     Keyword = "barber" 
     Slack = 1 #The slack sounds might be a little janky, but I think they're cool.
+    BrakeSound = 0 #Doesn't work (yet)
     
     #I wouldn't suggest changing the sounds.
-    SlowSpeed = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/perfect/s_freightperfectwheel01.wav" 
-    SlowSpeed2 = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/defective/s_freightdefectivewheel01.wav"
-    MedSpeed = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/defective/s_freightdefectivewheel04.wav"
-    HighSpeed = "titus's locomotive sound expansion pack/resources/railvehicle/freightstock/resources/wheels/rumble/s_autorackrumbled11.wav"
+    SlowSpeed = "gsgtrainsounds/wheels/perfect/perfect_1.wav" 
+    SlowSpeed2 = "gsgtrainsounds/wheels/random/flat/flat_4.wav"
+    MedSpeed = "gsgtrainsounds/wheels/random/flat/flat_3.wav"
+    HighSpeed = "gsgtrainsounds/wheels/perfect/rumble_2.wav"
     
     #---------------------------------------------------------
+    
+    setName("Toast Wheelsounds\nv1.1")
     
     A = 1
     S1 = A
@@ -56,6 +59,13 @@ if(first() | dupefinished()){
     holoScale(A, vec(0))
     holoParent(A, owner())
     
+    A++
+    R = A
+    holoCreate(A, 
+    owner():toWorld(vec(0,0,0)),vec(1),owner():toWorld(ang(0,0,0)))
+    holoScale(A, vec(0))
+    holoParent(A, owner())
+    
     holoEntity(S1):soundPlay(0,0,SlowSpeed)
     soundVolume(0,0)
     
@@ -68,6 +78,9 @@ if(first() | dupefinished()){
     holoEntity(H):soundPlay(3,0,HighSpeed)
     soundVolume(3,0)
     
+    holoEntity(R):soundPlay(3,0,HighSpeed)
+    soundVolume(4,0)
+    
     Vol1 = 0
     Vol2 = 0
     Vol3 = 0
@@ -76,6 +89,8 @@ if(first() | dupefinished()){
     Pit3 = 90
     
     findIncludeClass("prop_physics")
+    
+    timer("rand",randint(1000,5000))
 }
 timer("find",500)
 timer("think",100)
@@ -96,9 +111,9 @@ if(clk("think")){
     #print(Vel)
     
     if(round(Vel) > 0){
-        Vol1 = (Vel/500)
+        Vol1 = (Vel/300)
         Pit1 = 90 + (Vol1*20)
-        
+        #print(Vol1)
         if(Vel > 250){
             Vol2 = clamp(((Vel*0.8)-250)/100,0,1)
             Pit2 = 90 + (Vol1*20)
@@ -106,8 +121,8 @@ if(clk("think")){
             Vol2 = 0
         }
         
-        if(Vel > 650){
-            Vol3 = clamp((Vel-650)/100,0,1)
+        if(Vel > 300){
+            Vol3 = clamp((Vel-300)/100,0,1)
             Pit3 = 90 + (Vol3*10)
         }else{
             Vol3 = 0
@@ -117,6 +132,15 @@ if(clk("think")){
         Vol2 = 0
         Vol3 = 0
     }
+    #[
+    if(Vel > 100){
+        timer("rand",randint(1000,5000))
+    }else{
+        stoptimer("rand")
+    }
+    ]#
+    
+    
     
     if(Dist > Radius-750){
         Dropoff = 1-((Dist-(Radius-750))/750)
@@ -144,10 +168,10 @@ if(clk("think")){
     }
     #print(Moving)
     if(changed(Moving) & Moving & ($Moving > 0) & Vel < 25){
-        holoEntity(SL):soundPlay(4,0,"titus's locomotive sound expansion pack/resources/railvehicle/buckeyecoupling/resources/buckeye/s_buckeyeslack"+randint(1,8):toString()+".wav")
+        holoEntity(SL):soundPlay(4,0,"gsgtrainsounds/wheels/slack/slack_"+randint(1,16)+".wav")
     }
     
-    if(Vel == 0){
+    if(round(Vel) < 1){
         soundVolume(0,0)
         soundPitch(0,90)
         
@@ -160,7 +184,7 @@ if(clk("think")){
         soundVolume(3,0)
         soundPitch(3,90)
     }else{
-        soundVolume(0,((clamp(Vol1-Vol2,0,1))*Dropoff)*0.3)
+        soundVolume(0,((clamp(Vol1-Vol2,0,1))*Dropoff)*0.5)
         soundPitch(0,Pit1)
         
         soundVolume(1,((clamp(Vol1-Vol2,0,1))*Dropoff))
@@ -171,5 +195,30 @@ if(clk("think")){
         
         soundVolume(3,(Vol3*0.75)*Dropoff)
         soundPitch(3,Pit3)
+        
+        soundVolume(4,1*Dropoff)
+        
+        #print(Dropoff)
     }
+}
+
+if(clk("rand")){
+    stoptimer("rand")
+    
+    if(Vel > 100){
+        local N = randint(1,70)
+        holoEntity(R):soundPlay(4,0,"gsgtrainsounds/wheels/random/"+N+".wav")
+        timer("rand",soundDuration("gsgtrainsounds/wheels/random/"+N+".wav")+randint(3000,7500))
+        #print("flange")
+    }elseif(100 > Vel & Vel > 10){
+        local N = randint(1,20)
+        holoEntity(R):soundPlay(4,0,"gsgtrainsounds/wheels/random/squeak/"+N+".wav")
+        timer("rand",soundDuration("gsgtrainsounds/wheels/random/squeak/"+N+".wav")+randint(3000,7500))
+        #print("creak")
+    }else{
+        soundStop(4,0.1)
+        timer("rand",randint(3000,7500))
+        #print("nothing")
+    }
+    
 }
