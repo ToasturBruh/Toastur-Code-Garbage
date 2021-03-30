@@ -9,7 +9,7 @@
 #Toast
 
 #wire_egp_model models/sprops/rectangles_superthin/size_1/rect_3x6.mdl
-#YOU MUST CHECK THE TRANSPARENT BACKGROUND BOX!!!!!!!!!!!!!!!!!!!!!!!!!!
+#YOU MUST CHECK THE TRANSPARENT BACKGROUND BOX IN THE EGP CONFIG!!!!!!!!!!!!!!!!!!!!!!!!!!
 #IF YOU ASK ME WHY IT'S BLACK I WILL STAB YOU!!!!!!!!!!
 
 if(first() | dupefinished() | ~Screen){
