@@ -78,7 +78,7 @@ if(first() | dupefinished()){
     holoEntity(H):soundPlay(3,0,HighSpeed)
     soundVolume(3,0)
     
-    holoEntity(R):soundPlay(3,0,HighSpeed)
+    holoEntity(R):soundPlay(4,0,HighSpeed)
     soundVolume(4,0)
     
     Vol1 = 0
