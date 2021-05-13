@@ -1,14 +1,19 @@
 @name Submesh Checker
 @inputs Model:entity
 @outputs CurMesh
-@persist MaxSubmeshes Bodygroup Excludes:array
+@persist MaxSubmeshes Bodygroup CurMesh Excludes:array CurMeshA:array
 @trigger 
 
 #Toastur
 
 if(first() | dupefinished()){
+    Model:setAlpha(0)
+    
     MaxSubmeshes = 65 #This can be found by P2Ming the model in question as normal and checking the submeshes in the .mdl list.
-    Bodygroup = 0 #Point at the prop and run 'prop2mesh_debug_bodygroups' (Make SURE you do this because the submeshes get pushed around.)
+    Bodygroup = 0 #Point at the prop and run 'prop2mesh_debug_bodygroups' (Make SURE you do this first because the submeshes get pushed around.)
+    
+    #Ignore this
+    CurMesh = 1
 }
 
 runOnKeys(owner(),1)
@@ -22,8 +27,9 @@ if(owner():keyPressed("mouse_wheel_down")){
 
 if(changed(CurMesh)){
     
-    Model:setAlpha(0)
+    CurMeshA = array()
     
+    CurMeshA = array(CurMesh)
     
     P2MID = 1
     P2M1 = p2mCreate(P2MID,
@@ -32,11 +38,11 @@ if(changed(CurMesh)){
     
     P2M1:p2mPushModel(P2MID,table(
         "model" = Model:model(),
-        "submodels" = array(CurMesh),
+        "submodels" = CurMeshA,
         "submodelswl" = 1,
         "bodygroup" = Bodygroup,
-        "position" = Model:toWorld(vec(0,0,0)),
-        "angle" = Model:toWorld(ang(0,0,0))
+        "position" = vec(0,0,0),
+        "angle" = ang(0,0,0)
     ))
     
     #P2M1:p2mPushModel(P2MID,Model:model(),array(CurMesh),
