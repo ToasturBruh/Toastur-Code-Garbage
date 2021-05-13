@@ -1,0 +1,57 @@
+@name Submesh Checker
+@inputs Model:entity
+@outputs CurMesh
+@persist MaxSubmeshes Bodygroup Excludes:array
+@trigger 
+
+#Toastur
+
+if(first() | dupefinished()){
+    MaxSubmeshes = 65 #This can be found by P2Ming the model in question as normal and checking the submeshes in the .mdl list.
+    Bodygroup = 0 #Point at the prop and run 'prop2mesh_debug_bodygroups' (Make SURE you do this because the submeshes get pushed around.)
+}
+
+runOnKeys(owner(),1)
+
+if(owner():keyPressed("mouse_wheel_up")){
+    CurMesh++
+}
+if(owner():keyPressed("mouse_wheel_down")){
+    CurMesh--
+}
+
+if(changed(CurMesh)){
+    
+    Model:setAlpha(0)
+    
+    
+    P2MID = 1
+    P2M1 = p2mCreate(P2MID,
+    Model:toWorld(vec(0)),
+    Model:toWorld(ang(0)))
+    
+    P2M1:p2mPushModel(P2MID,table(
+        "model" = Model:model(),
+        "submodels" = array(CurMesh),
+        "submodelswl" = 1,
+        "bodygroup" = Bodygroup,
+        "position" = Model:toWorld(vec(0,0,0)),
+        "angle" = Model:toWorld(ang(0,0,0))
+    ))
+    
+    #P2M1:p2mPushModel(P2MID,Model:model(),array(CurMesh),
+    #vec(0,0,0),ang(0,0,0),vec(1,1,1),Bodygroup,0,0,
+    #array(vec(0,0,0),vec(0,1,0)))
+    
+    P2M1:p2mBuild()
+    P2M1:p2mSetUV(P2MID,48)
+    P2M1:p2mSetMaterial(P2MID,"sprops/sprops_grid")
+    P2M1:p2mSetColor(P2MID,vec(255,255,255))
+    P2M1:parentTo(Model)
+    
+    if(CurMesh > MaxSubmeshes){CurMesh = 0}
+    if(CurMesh < 0){CurMesh = MaxSubmeshes}
+    
+    print("Submesh "+CurMesh)
+    
+}
