@@ -37,7 +37,7 @@ if(first() | dupefinished()){
         
         "clips" = array(vec(0,0,0),vec(0,0,0)) #Must always have an even number of vectors. (clip position,clip direction) Works exactly like holoclip.
     ))
-    #Just copy and paste everything
+    #Just copy and paste everything in p2mPushModel to create more to the mesh.
     
     P2M1:p2mBuild() #Builds the mesh.
     
