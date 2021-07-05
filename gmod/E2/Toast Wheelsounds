@@ -2,12 +2,14 @@
 @inputs 
 @outputs Vel
 @persist E:entity Keyword:string Radius Vel Moving Slack
-@persist S1 S2 M H SL
+@persist S1 S2 M H SL R
 @persist Vol1 Vol2 Vol3
 @persist Pit1 Pit2 Pit3
 @trigger 
 
 if(first() | dupefinished()){
+    
+    #You can type ".delete sound" to delete the chip
     
     Radius = 1500
     Keyword = "barber" 
@@ -22,7 +24,7 @@ if(first() | dupefinished()){
     
     #---------------------------------------------------------
     
-    setName("Toast Wheelsounds\nv1.1")
+    setName("Toast Wheelsounds\nv1.2")
     
     A = 1
     S1 = A
@@ -77,9 +79,6 @@ if(first() | dupefinished()){
     
     holoEntity(H):soundPlay(3,0,HighSpeed)
     soundVolume(3,0)
-    
-    holoEntity(R):soundPlay(4,0,HighSpeed)
-    soundVolume(4,0)
     
     Vol1 = 0
     Vol2 = 0
@@ -196,29 +195,46 @@ if(clk("think")){
         soundVolume(3,(Vol3*0.75)*Dropoff)
         soundPitch(3,Pit3)
         
-        soundVolume(4,1*Dropoff)
+        soundVolume(5,1*Dropoff)
         
         #print(Dropoff)
     }
 }
-
+#[
 if(clk("rand")){
     stoptimer("rand")
     
     if(Vel > 100){
         local N = randint(1,70)
-        holoEntity(R):soundPlay(4,0,"gsgtrainsounds/wheels/random/"+N+".wav")
-        timer("rand",soundDuration("gsgtrainsounds/wheels/random/"+N+".wav")+randint(3000,7500))
-        #print("flange")
+        holoEntity(R):soundPlay(5,0,"gsgtrainsounds/wheels/random/"+N+".wav")
+        timer("rand",(soundDuration("gsgtrainsounds/wheels/random/"+N+".wav")*1000)+randint(3000,7500))
+        #print((soundDuration("gsgtrainsounds/wheels/random/"+N+".wav")*1000))
+        timer("randstop",soundDuration("gsgtrainsounds/wheels/random/squeak/"+N+".wav"))
     }elseif(100 > Vel & Vel > 10){
         local N = randint(1,20)
-        holoEntity(R):soundPlay(4,0,"gsgtrainsounds/wheels/random/squeak/"+N+".wav")
+        holoEntity(R):soundPlay(5,0,"gsgtrainsounds/wheels/random/squeak/"+N+".wav")
         timer("rand",soundDuration("gsgtrainsounds/wheels/random/squeak/"+N+".wav")+randint(3000,7500))
-        #print("creak")
+        #print(N)
+        timer("randstop",soundDuration("gsgtrainsounds/wheels/random/squeak/"+N+".wav"))
     }else{
-        soundStop(4,0.1)
+        soundStop(5,0.1)
         timer("rand",randint(3000,7500))
         #print("nothing")
     }
     
+}]#
+#[
+if(clk("randstop")){
+    stoptimer("randstop")
+    soundStop(5)
+    #print("stop")
+}
+]#
+runOnChat(1)
+if(chatClk(owner())){
+    if(owner():lastSaid():lower() == ".delete sound" | owner():lastSaid():lower() == "iraq"){
+        entity():propDelete()
+        hideChat(1)
+        print("Wheel sound E2 deleted!")
+    }
 }
