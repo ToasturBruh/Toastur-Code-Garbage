@@ -29,7 +29,7 @@ if(first() | dupefinished()){
         "scale" = vec(1,1,1),
         
         "bodygroup" = 0,      #'prop2mesh_debug_bodygroups'
-        "submodels" = array(), #Blacklist for submeshes. Do bodygroups FIST as changing BG's will push the subeshes around.
+        "submodels" = array(), #Blacklist for submeshes. Do bodygroups FIRST as changing BG's will push the subeshes around.
         "submodelswl" = 1,     #Turns the submodels list in to a whitelist.
         
         "flat" = 0,  #Render flat.
