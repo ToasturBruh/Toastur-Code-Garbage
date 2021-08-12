@@ -8,7 +8,8 @@
 @persist CarCount BrakeLine IncreaseLocoBrake DecreaseLocoBrake LB26L_ClickQ  EmergencyBrake [EmergencyBrakeSound BrakeScreech]:string Moving BQ Threshold_Hard BPQ BrakeForce
 @persist CarCount_Init HandBrake HBQ MaxTrainBrakeForce MaxLocoBrakeForce Switching
 @persist ShovelRate BurnRate InjectRate BoilRate HeatRate ThetaDist CN CM Diameter ChuffQ DRV Johnson_Bar
-@persist SoundLevel EchoLevel DSPIDX Clt
+@persist SoundLevel EchoLevel DSPIDX Clt Version:string
+
 
 @inputs  Whistle1 Whistle2 Chuff1 Chuff2 Chuff3 Chuff4
 @outputs ParticleOn Particle:string WhistleParticle:string Safeties WOn Clt
@@ -35,22 +36,24 @@
 #Edited again by The Big E again to make the chuffing sync better with wheel rotation
 
 #Community Edit V1.2
+Version = "1.2"
 
 #[
 SETUP INSTRUCTIONS:
-0- (You shouldn't have to do this unless you know what you're doing) Configure chip.
-1- Place the e2 on the rear of a steam locomotive's baseplate and leave it welded.
-2- Create an ADVANCED Entity Marker and link it to all the locomotive's DRIVER wheels if if uses a PROP base.
-    If the locomotive uses a HOLO base, you'll want to wire all SLIDER axles/bogies on the locomotive to another ADVANCED Entity Marker.
-3- Wire Drivers[ARRAY] to the entity marker if it uses a PROP base, otherwise wire Trucks[ARRAY] to the entity marker.
-4 Wire Pod:entity to the locomotive's pod controller Entity:entity output.
-5- Wire Ignite to either a pod controller key or a NON-TOGGLED button.
-6- If manual fireman mode is desired: wire Damper, AddCoal, and AddWater to either pod controller keys or wire buttons (Can be toggled or non-toggled).
-7- Set up screens, gauges, indicators, heiroglyphs, whatever so you can see relevant information like speed, throttle setting, water levels, etc.
+0 - (You shouldn't have to do this unless you know what you're doing) Configure chip.
+1 - Place the e2 on the rear of a steam locomotive's baseplate and leave it welded.
+2 - Create an ADVANCED Entity Marker and link it to all the locomotive's DRIVER wheels if if uses a PROP base.
+    2.1 - If the locomotive uses a HOLO base, you'll want to wire all SLIDER axles/bogies on the locomotive to another ADVANCED Entity Marker.
+3 - Wire Drivers[ARRAY] to the entity marker if it uses a PROP base, otherwise wire Trucks[ARRAY] to the entity marker.
+4 - Wire Pod:entity to the locomotive's pod controller Entity:entity output.
+5 - Wire Ignite to either a pod controller key or a NON-TOGGLED button.
+6 - If manual fireman mode is desired: wire Damper, AddCoal, and AddWater to either pod controller keys or wire buttons (Can be toggled or non-toggled).
+7 - Set up screens, gauges, indicators, heiroglyphs, whatever so you can see relevant information like speed, throttle setting, water levels, etc.
+
 The rest of the steps are optional but neat.
-8- Put a wire light on the firebox and wire it to Firebox[VECTOR]. It'll glow in accordance with the temperature level!
-9-Wire the Base1 through Base4 inputs to the 4 cylinder cock particle emitters on the pistons, and Wire C1L through C2R to their corresponding outputs on the holobase.
-10-Wire up the smoke/whistle particles, remember to wire "interval" on the wire emitters to the On outputs alongside everything else you wire
+8 - Put a wire light on the firebox and wire it to Firebox[VECTOR]. It'll glow in accordance with the temperature level!
+9 - Wire the Base1 through Base4 inputs to the 4 cylinder cock particle emitters on the pistons, and Wire C1L through C2R to their corresponding outputs on the holobase.
+10- Wire up the smoke/whistle particles, remember to wire "interval" on the wire emitters to the On outputs alongside everything else you wire
 
 
 One last little tip: the "CONSTANT" output is a constant value of 1. Very Handy.
@@ -175,24 +178,20 @@ if(first()|dupefinished()){
     Diameter = 36 #Wheel DIAMETER, in Source Units. This is important for sound calculations!
     
     # Particle Config (Rusty's smoke code)
-    
-    
     # made by Da Rustyrail
     Decayrate=10 ##How fast coal dust dissapears from the smoke (set to 0 for constant smoke color)
     
     # particles can also be 'null' which won't play anything
     PStages = array("clag_2stroke_2","White_100_Thin","White_100_Medium","White_100_Thick","Gray_100_Thin","Gray_100_Medium","Gray_100_Thick","Black_100_Thin","Black_100_Medium","Black_100_Thick")
-    
+    WhistleParticle="White_100_Thin"
     
     Soot=50 #set the starting smoke color
-    
     SafteyThresh=180 #The pressure at which the safety valves open
     
     
     #Holoslip Config
     
     ThrottleUpper=7 #Upper Throttle Threshold to be passed to start wheelslipping
-    
     ThrottleLower=5 #Lower Throttle threshold to go below to stop wheelslipping
     
     
@@ -210,8 +209,6 @@ if(first()|dupefinished()){
     holoParent(2,entity())
     
     ThetaDist = 0
-    
-    WhistleParticle="White_100_Thin"
     
     CN = 1
     CM = 5
@@ -328,6 +325,38 @@ if(first()|dupefinished()){
     MaxTrainBrakeForce = 0
     
     Threshold_Hard = 0.25
+    
+    runOnHTTP(1)
+    httpRequest("https://raw.githubusercontent.com/ToasturBruh/Toastur-Code-Garbage/main/gmod/E2/versions/RSC%3ACE.txt")
+    timer("vto",5000)
+}
+if(clk("vto")){
+    print("RSC version check timeout.")
+    O:soundPlay(0,0,"lazpack/misc/tractionmotor_explosion.wav")
+    runOnHTTP(0)
+}elseif(httpClk()){
+    stoptimer("vto")
+    runOnHTTP(0)
+    
+    local VExp = Version:explode(".")
+    local VMaj = VExp[1,string]:toNumber()
+    local VMin = VExp[2,string]:toNumber()
+    
+    
+    local MVer = httpData()
+    local MVExp = MVer:explode(".")
+    local MVMaj = MVExp[1,string]:toNumber()
+    local MVMin = MVExp[2,string]:toNumber()
+    
+    local Conflict = ((MVMaj > VMaj) | (MVMin > VMaj))
+    
+    if((MVMaj > VMaj) | (MVMin > VMin)){
+        print("RSC is out of date! Your version: "+Version+" Master version: "+MVer)
+        O:soundPlay(0,0,"")
+    }else{
+        print("RSC is up to date!")
+        O:soundPlay(0,0,"")
+    }
 }
 
 interval(50)
