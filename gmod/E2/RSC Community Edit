@@ -8,10 +8,10 @@
 @persist CarCount BrakeLine IncreaseLocoBrake DecreaseLocoBrake LB26L_ClickQ  EmergencyBrake [EmergencyBrakeSound BrakeScreech]:string Moving BQ Threshold_Hard BPQ BrakeForce
 @persist CarCount_Init HandBrake HBQ MaxTrainBrakeForce MaxLocoBrakeForce Switching
 @persist ShovelRate BurnRate InjectRate BoilRate HeatRate ThetaDist CN CM Diameter ChuffQ DRV Johnson_Bar
-@persist SoundLevel EchoLevel DSPIDX
+@persist SoundLevel EchoLevel DSPIDX Clt
 
 @inputs  Whistle1 Whistle2 Chuff1 Chuff2 Chuff3 Chuff4
-@outputs ParticleOn Particle:string WhistleParticle:string Safeties WOn
+@outputs ParticleOn Particle:string WhistleParticle:string Safeties WOn Clt
 @persist PStages:array Soot SootStage ThrottleStage Decayrate SafteyThresh WOn WBoth WhistleParticle:string
 
 @inputs C1L C2L C1R C2R Base:entity Base2:entity Base3:entity Base4:entity
@@ -24,12 +24,17 @@
 @model models/beer/wiremod/watersensor.mdl
 
 #Master Version 1.6
-#Community Version 1.0
+#Community Version 1.1
 #Rusty PT edit V0.25
+
+#Changelog
+
 #DSP edit by Toast
 #Edited again by Mag for sound improvements lul
-#Edited again again by The Big E to make it more Fun To Run (TM)
-#Community Edit V1.0
+#Edited again by The Big E to make it more Fun To Run (TM) (Wheelslip, built-in particle systems)
+#Edited again by The Big E again to make the chuffing sync better with wheel rotation
+
+#Community Edit V1.1
 
 #[
 SETUP INSTRUCTIONS:
@@ -65,10 +70,10 @@ Happy Steaming!
 
 if(first()|dupefinished()){
     
-    Mul = 200 #The General Force Multiplier, determines pulling power. 200 is a good value.
-    Band = 30 #The "Power Band." The (Highly Idealized) speed range (in MPH) over which you can go before you need to reduce the reverser value.
+    Mul = 20 #The General Force Multiplier, determines pulling power. 200 is a good value.
+    Band = 15 #The "Power Band." The (Highly Idealized) speed range (in MPH) over which you can go before you need to reduce the reverser value.
     #In Practice it's closer to Half what you have here. 30 is a good value.
-    BrakeMul = 2 #The Braking force multiplier, independent of the trainline airbrakes. 2 is a good value to start.
+    BrakeMul = 1 #The Braking force multiplier, independent of the trainline airbrakes. 2 is a good value to start.
     SoundLevel = 85 #This setting controls how far the main chugging can be heard. 85 is a good number.
     EchoLevel = 110 #This setting controls how far the chugging echo can be heard. 20-40 units above SoundLevel is good.
     
@@ -86,22 +91,22 @@ if(first()|dupefinished()){
     
     Alternate = "lshift" #When pressing this key, all controls with "!ALT" next to them will be triggered, and all the other will be ignored.
     
-    Controls["ReverserF",string]        = "W"
-    Controls["ReverserB",string]        = "S"
+    Controls["ReverserF",string]        = "w"
+    Controls["ReverserB",string]        = "s"
     
-    Controls["IncreaseThrottle",string] = "R"
-    Controls["DecreaseThrottle",string] = "F"
+    Controls["IncreaseThrottle",string] = "d"
+    Controls["DecreaseThrottle",string] = "a"
     
-    Controls["IncreaseTrainBrake",string]    = "APOSTROPHE"
-    Controls["DecreaseTrainBrake",string]    = "SEMICOLON"
+    Controls["IncreaseTrainBrake",string]    = "space"
+    Controls["DecreaseTrainBrake",string]    = "ralt"
     
-    Controls["IncreaseLocoBrake",string] = "RBRACKET"
-    Controls["DecreaseLocoBrake",string] = "LBRACKET"
+    Controls["IncreaseLocoBrake",string] = "t"
+    Controls["DecreaseLocoBrake",string] = "f"
     
     
-    Controls["EmergencyBrake",string] = "rshift"
+    Controls["EmergencyBrake",string] = "b"
     
-    Controls["HandBrake",string] = "H" 
+    Controls["HandBrake",string] = "h" 
     
     
     #Ignore this
@@ -140,16 +145,16 @@ if(first()|dupefinished()){
     )
     
     ChuffLoopThresholds = array( #Minimum speeds to switch to the corresponding chuff sound. THIS ARRAY SHOULD HAVE ONE MORE ELEMENT IN IT THAN THE CHUFFLOOPS ARRAY.
-        17.5, #First Loop Sound
+        13, #First Loop Sound
+        17,
+        20,
         25,
         30,
+        35,
         40,
-        50,
-        60,
-        70,
-        80, #Last Loop Sound
+        45, #Last Loop Sound
         
-        125 #This is the top speed of the locomotive for sound purposes.
+        60 #This is the top speed of the locomotive for sound purposes.
     )
     
     UseKPH = 0 #Speed units to use for ChuffLoopThresholds. 0: use MPH. 1: Use KPH
@@ -167,7 +172,7 @@ if(first()|dupefinished()){
     CompressorOff = "loknoisbygeordie/steam/misc/air_pump5_end_slow.wav"
     
     
-    Diameter = 54 #Wheel DIAMETER, in Source Units. This is important for sound calculations!
+    Diameter = 36 #Wheel DIAMETER, in Source Units. This is important for sound calculations!
     
     # Particle Config (Rusty's smoke code)
     
@@ -206,7 +211,7 @@ if(first()|dupefinished()){
     
     ThetaDist = 0
     
-    WhistleParticle=""
+    WhistleParticle="White_100_Thin"
     
     CN = 1
     CM = 5
@@ -379,8 +384,8 @@ if(clk("interval")){
     }
     V = -E:velL():z()*1.25
     Spd = abs(V)
-    MPH = abs(toUnit("mph",V))*4/3 
-    KPH = abs(toUnit("km/h",V))*4/3
+    MPH = ((abs(toUnit("mph",V))*4/3)+(Spin^3)-1)*Spin^2 
+    KPH = ((abs(toUnit("km/h",V))*4/3)+(Spin^3)-1)*Spin^2
     
     Moving = MPH>Threshold_Hard
     #Wheel Sound
@@ -762,7 +767,7 @@ if(clk("Chuff")){
         #if(Int > 150){
         local SampleSpeed = UseKPH ? KPH : MPH
         local CThreshold = ChuffLoopThresholds[1,number]
-        if((SampleSpeed+Spin^2) < CThreshold){
+        if((SampleSpeed*Spin^2) < CThreshold){
             
             if(ChuffQ>0){ChuffQ = 0, soundStop(10) soundStop("LOOPDSP")}
             
@@ -832,6 +837,8 @@ if(clk("Chuff")){
                 
                 local Snd = ChuffLoops[SelectLoopSound,string]
                 
+                
+                
                 B:soundPlay(10,0,Snd)
                 soundLevel(10,SoundLevel)
                 #soundDSP(10,0)
@@ -847,13 +854,17 @@ if(clk("Chuff")){
             if(Reverser>=0){local OM = 100 + 10*((SampleSpeed+Spin^2) - MyRangeMin)/(MyRangeMax - MyRangeMin)}
             else{local OM = 100 + 10*((SampleSpeed-Spin^2) - MyRangeMin)/(MyRangeMax - MyRangeMin)}
             
+            local Clt = ChuffLoopThresholds[SelectLoopSound,number]
             
             #soundPitch(10,OM)
-            soundVolume(10,Throttle/20 + 0.5)
+            soundVolume(10,Throttle/15 + (1/3))
+            soundPitch(10,(abs(MPH-(Clt-1))*3)+96)
             
             #soundPitch("LOOPDSP",OM)
-            soundVolume("LOOPDSP",Throttle/20 + 0.5)
+            soundVolume("LOOPDSP",Throttle*0.8 + 0.2)
             #soundVolume("LOOPDSP",0)
+            soundPitch("LOOPDSP",(abs(MPH-(Clt-1))*3)+96)
+            
             
             timer("Chuff",100)
         }
