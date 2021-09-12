@@ -9,6 +9,8 @@
 if(first() | dupefinished()){
     
     #This is intended to be a tutorial, something to refer back to. Please start a new E2 and copy+paste what you need.
+    #For more advanced usages, please refer to the offical P2M wiki.
+    #https://github.com/shadowscion/Prop2Mesh/wiki
     
     #If you need the bodygroup number, spawn the prop and give it the desired bodygroups.
     #Point your crosshair and it and run 'prop2mesh_debug_bodygroups'
