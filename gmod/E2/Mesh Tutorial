@@ -13,7 +13,7 @@ if(first() | dupefinished()){
     #https://github.com/shadowscion/Prop2Mesh/wiki
     
     #If you need the bodygroup number, spawn the prop and give it the desired bodygroups.
-    #Point your crosshair and it and run 'prop2mesh_debug_bodygroups'
+    #Point your crosshair and it and run 'prop2mesh_debug_bodygroups' through console.
     
     if(!->Base){ #If base isn't wired, set it to the chip model.
         Base = entity()
