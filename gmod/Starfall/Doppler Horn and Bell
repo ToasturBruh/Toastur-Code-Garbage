@@ -1,1 +1,131 @@
-I'll add it here soon.
+--@name Doppler Horn and Bell
+--@author Toastur
+--@shared
+--@model 
+--models/nathan/p_series/p5_hm.mdl
+
+HornOn = "moztrainsounds/us_horns_bells/k3la_1_loop.wav"
+HornOff = "moztrainsounds/us_horns_bells/k3la_1_end.wav"
+BellOn = "gsgtrainsounds/bells/ukm_b443_steel_bell_loop.wav"
+PitchMul = 0.25 --Intensity of the doppler pitching effect, 0.15 is a good value for a cool, but unrealistic effect. Lower values may result in a more realistic effect.
+HornOffDur = 0.7 --Starfall doesn't have the ability to call sound durations (yet, I requested it), so you must add the end sound length here (in seconds).
+HornPitch = 100
+
+HornDist = 90 --How far the base horn sound can be heard.
+BellDist = 60 --How far the base bell sound can be heard.
+EchoDist = 140 --How far the horn's echo can be heard.
+
+if SERVER then
+    
+    chip():setNocollideAll(1)
+    
+    wire.adjustInputs({"Horn","Bell"},{"number","number"})
+    --wire.adjustOutputs({"Dist","Delta"},{"number","number"})
+    
+    hook.add("input","inputupdate",function(name,value)
+        if name == "Horn" then
+            net.start("hornclient")
+            net.writeFloat(value)
+            net.send()
+        end
+        
+        if name == "Bell" then
+            net.start("bellclient")
+            net.writeFloat(value)
+            net.send()
+        end
+    end)
+    
+elseif CLIENT then
+    
+    local HornPlay = sounds.create(chip(),HornOn)--chip():emitSound(HornOn,HornDist,100,1)
+    local HornStop = sounds.create(chip(),HornOff)--chip():emitSound(HornOff,HornDist,100,1)
+    local BellPlay = sounds.create(chip(),BellOn)
+    
+    EchoHolo = holograms.create(chip():getPos(),Angle(0),"models/sprops/cuboids/height06/size_1/cube_6x6x6.mdl")
+    EchoHolo:setParent(chip())
+    
+    local HornEcho = sounds.create(EchoHolo,HornOn)
+    local HornEchoStop = sounds.create(EchoHolo,HornOff)
+    
+    HornPlay:setSoundLevel(HornDist)
+    HornStop:setSoundLevel(HornDist)
+    BellPlay:setSoundLevel(HornDist)
+    
+    HornEcho:setSoundLevel(EchoDist)
+    HornEchoStop:setSoundLevel(EchoDist)
+    
+    HornEcho:setDSP(16)
+    HornEchoStop:setDSP(16)
+    
+    local SmoothPitch = 0
+    local Delta = 0
+    
+    hook.add("think","ref",function()
+        local Dist = (player():getPos() - chip():getPos()):getLength()
+        local Pitch = (Delta - Dist)*1
+        Delta = Dist
+        --local Pitch =
+        
+        --print(Pitch)
+        
+        local SmoothPitch = math.round(Pitch,1) --math.clamp(SmoothPitch + (Pitch - SmoothPitch) / 50, -50, 50)
+        
+        --print(SmoothPitch*PitchMul)
+        
+        if HornPlay:isPlaying() then
+            HornPlay:setPitch(HornPitch+(SmoothPitch*PitchMul))
+        end
+        if HornStop:isPlaying() then
+            HornStop:setPitch(HornPitch+(SmoothPitch*PitchMul))
+        end
+        if BellPlay:isPlaying() then
+            BellPlay:setPitch(100+(SmoothPitch*PitchMul))
+        end
+        
+    end)
+    
+    net.receive("hornclient",function()
+        local horn = net.readFloat("hornclient")
+        if horn >= 1 then
+            timer.stop("hstop")
+            HornPlay:play()
+            
+            HornEcho:play()
+            
+            HornEcho:setSoundLevel(EchoDist)
+            HornEcho:setDSP(16)
+            
+            HornStop:stop()
+            HornEchoStop:stop()
+            --chip():emitSound(HornOn,HornDist,100,1)
+        elseif horn == 0 then
+            HornPlay:stop(0.1)
+            HornEcho:stop(0.1)
+            --chog says hi
+            HornStop:play()
+            HornEchoStop:play()
+            HornStop:setSoundLevel(EchoDist)
+            HornEchoStop:setDSP(16)
+            
+            --print(HornOffDur)
+            timer.create("hstop",sounds.duration(HornOff),1,function()
+                --print("stop")
+                HornStop:stop()
+                HornEchoStop:stop()
+            end)
+        end
+    end)
+    
+    
+    net.receive("bellclient",function()
+        local bell = net.readFloat("bellclient")
+        if bell == 1 then
+            BellPlay:play()
+        elseif bell == 0 then
+            timer.create("bstop",0,1,function()
+                BellPlay:stop()
+            end)
+        end
+    end)
+end
