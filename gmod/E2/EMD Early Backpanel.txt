@@ -1,0 +1,57 @@
+@name EMD Early Backpanel
+@inputs EngineStart EnginePrime EngineStop GroundReset FuelCutoff Isolation CycleLight CycleSelector
+@inputs ExcitationLimit TurboAux RelayTripped HotEngine NoPower LowOil
+@inputs Charge
+@outputs Start Prime Shutdown UnitSelector Isolation GroundReset
+@persist UnitSelector LightSelector
+@trigger 
+@model models/rlc_delta_lua/accessories/emd_backpanel_early.mdl
+
+#Toast
+
+entity():setBodygroup(1,ExcitationLimit ? 1 : 0)
+if(entity():getBodygroup(2) != 2){entity():setBodygroup(2,TurboAux ? 1 : 0)}
+entity():setBodygroup(3,RelayTripped ? 1 : 0)
+entity():setBodygroup(4,HotEngine ? 1 : 0)
+entity():setBodygroup(5,NoPower ? 1 : 0)
+entity():setBodygroup(6,LowOil ? 1 : 0)
+
+if(EnginePrime){
+    entity():setBoneAngRelative(1,ang(90,0,0))
+    Prime = 1
+    Start = 0
+}elseif(EngineStart){
+    entity():setBoneAngRelative(1,ang(-90,0,0))
+    Start = 1
+    Prime = 0
+}else{
+    entity():setBoneAngRelative(1,ang(0,0,0))
+    Start = 0
+    Prime = 0
+}
+#print(entity():boneIndex("fuel_cutoff"))
+
+if(CycleSelector){UnitSelector+=(UnitSelector > 3 ? -3 : 1)}
+if(CycleLight){LightSelector+=(LightSelector > 3 ? -3 : 1)}
+Shutdown = (EngineStop | FuelCutoff) ? 1 : 0
+Start = EngineStart
+
+entity():setBoneAngRelative(2,ang(Isolation*90,0,0)) #Isolation
+entity():setBonePosRelative(3,vec(-0.2*FuelCutoff,0,0)) #Fuel cutoff
+entity():setBonePosRelative(4,vec(-0.2*EngineStop,0,0)) #Engine stop
+entity():setBonePosRelative(5,vec(-0.2*GroundReset,0,0)) #Ground reset
+entity():setBoneAngRelative(6,ang(38*(Charge/100),0,0)) #Charge
+entity():setBoneAngRelative(13,ang(90*UnitSelector,0,0))#Unit selector
+entity():setBoneAngRelative(14,ang(90*LightSelector,0,0))
+
+if(changed(EnginePrime | EngineStart) | CycleLight | CycleSelector){
+    entity():soundPlay("rotary",0,"monkssounds/buttons/heavy buttons/heavybutton19_"+randint(1,2):toString()+".wav")
+}
+
+if(changed(EngineStart | EngineStop | FuelCutoff) & (EngineStart | EngineStop | FuelCutoff)){
+    entity():soundPlay("plunger_in",0,"monkssounds/buttons/button31_push.wav")
+}
+
+if(changed(EngineStart | EngineStop | FuelCutoff) & (!EngineStart | !EngineStop | !FuelCutoff)){
+    entity():soundPlay("plunger_out",0,"monkssounds/buttons/button31_release.wav")
+}
