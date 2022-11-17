@@ -1,0 +1,60 @@
+@name SD70ACe Backpanel
+@inputs EngineStart EngineStop Isolation CycleLight
+@outputs Start Prime Shutdown Isolation
+@persist Panel:entity LightSelector
+@persist StartBone StopBone IsoBone LightBone
+@trigger 
+@model models/toast/locomotives/emd_modern_control_panel.mdl
+
+#Toast
+
+if(first() | dupefinished()){
+    Panel = entity()
+    LightSelector = 0
+    
+    StartBone = Panel:boneIndex("btn_start")
+    StopBone  = Panel:boneIndex("btn_stop")
+    
+    IsoBone  = Panel:boneIndex("sw_isolation")
+    LightBone  = Panel:boneIndex("sw_hdlt")
+    
+    Prime = 1
+}
+
+
+#print(entity():boneIndex("fuel_cutoff"))
+
+if(CycleLight){LightSelector+=(LightSelector > 3 ? -3 : 1)}
+
+EngineStop = EngineStop ? 1 : 0
+if(EngineStop){
+    #local Time = curtime()
+    timer("stop",2000)
+    if(clk("stop")){
+        Shutdown = 1
+    }
+}else{
+    stoptimer("stop")
+    Shutdown = 0
+}
+
+#Shutdown    = EngineStop ? 1 : 0
+Start       = EngineStart ? 1 : 0
+Isolation   = Isolation ? 1 : 0
+
+entity():setBoneAngRelative(IsoBone,ang(Isolation*90,0,0)) #Isolation
+entity():setBonePosRelative(StartBone,vec(0,-0.02*EngineStart,0)) #Engine start
+entity():setBonePosRelative(StopBone,vec(0,-0.4*EngineStop,0)) #Engine stop
+entity():setBoneAngRelative(LightBone,ang(90*LightSelector,0,0))
+
+if(~Isolation | (~CycleLight & CycleLight)){
+    entity():soundPlay("rotary",0,"monkssounds/buttons/heavy buttons/heavybutton19_"+randint(1,2):toString()+".wav")
+}
+
+if(changed(EngineStart | EngineStop) & (EngineStart | EngineStop)){
+    entity():soundPlay("plunger_in",0,"monkssounds/buttons/button31_push.wav")
+}
+
+if(changed(EngineStart | EngineStop) & (!EngineStart | !EngineStop)){
+    entity():soundPlay("plunger_out",0,"monkssounds/buttons/button31_release.wav")
+}
