@@ -4,7 +4,7 @@
 @persist Panel:entity LightSelector
 @persist StartBone StopBone IsoBone LightBone
 @trigger 
-@model models/toast/locomotives/emd_modern_control_panel.mdl
+@model models/rlc_delta_lua/accessories/emd_backpanel_ace.mdl
 
 #Toast
 
