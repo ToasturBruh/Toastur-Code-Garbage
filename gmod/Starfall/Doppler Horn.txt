@@ -1,0 +1,84 @@
+--@name Doppler Horn
+--@author Toastur
+--@shared
+
+HornOn  = "gsgtrainsounds/horns/p3_loop2.wav"
+HornOff = "gsgtrainsounds/horns/p3_end2.wav"
+HornLevel = 90
+HornPitch = 100
+
+
+if SERVER then
+    chip():setNocollideAll(1)
+    
+    wire.adjustInputs({"Horn"},{"number"})
+    --wire.adjustOutputs({"Dist","Delta"},{"number","number"})
+    
+    hook.add("input","inputupdate",function(name,value)
+        if name == "Horn" then
+            net.start("hornclient")
+                net.writeFloat(value)
+            net.send()
+        end
+    end)
+    
+elseif CLIENT then
+
+    local HornPlay = sounds.create(chip(),HornOn)--chip():emitSound(HornOn,HornDist,100,1)
+    local HornStop = sounds.create(chip(),HornOff)--chip():emitSound(HornOff,HornDist,100,1)
+    
+    HornPlay:setSoundLevel(HornLevel)
+    HornStop:setSoundLevel(HornLevel)
+    
+    hook.add("think","ref",function()
+        
+        --Delta = Dist
+        --local Pitch =
+        
+        --print(Pitch)
+        
+        --print(SmoothPitch*PitchMul)
+
+        if HornPlay:isPlaying() or HornStop:isPlaying() then
+            if player():inVehicle() then
+                HornPlay:setDSP(14)
+                HornStop:setDSP(14)
+            
+                HornPlay:setPitch(HornPitch)
+                HornStop:setPitch(HornPitch)
+            else
+                local Dist = player():getPos() - chip():getPos()
+                local Pitch = (chip():getVelocity():dot(Dist)/Dist:getLength())/150
+            
+                HornPlay:setDSP(1)
+                HornStop:setDSP(1)
+            
+                HornPlay:setPitch(HornPitch+(Pitch))
+                HornStop:setPitch(HornPitch+(Pitch))
+            end
+        end
+        
+    end)
+    
+    net.receive("hornclient",function()
+        local horn = net.readFloat("hornclient")
+        if horn >= 1 then
+            timer.stop("hstop")
+            HornPlay:play()
+            --HornStop:stop()
+            --chip():emitSound(HornOn,HornDist,100,1)
+        elseif horn == 0 then
+            HornStop:stop()
+            HornPlay:stop(0.1)
+            --chog says hi
+            HornStop:play()
+            
+            --print(HornOffDur)
+            timer.create("hstop",sounds.duration(HornOff),1,function()
+                --print("stop")
+                HornStop:stop()
+            end)
+        end
+    end)
+
+end
