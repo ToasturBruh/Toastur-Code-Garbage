@@ -12,8 +12,7 @@ if SERVER then
     chip():setNocollideAll(1)
     
     wire.adjustInputs({"Horn"},{"number"})
-    --wire.adjustOutputs({"Dist","Delta"},{"number","number"})
-    
+
     hook.add("input","inputupdate",function(name,value)
         if name == "Horn" then
             net.start("hornclient")
@@ -30,15 +29,15 @@ elseif CLIENT then
     HornPlay:setSoundLevel(HornLevel)
     HornStop:setSoundLevel(HornLevel)
     
+    local Ent = nil
+    
     hook.add("think","ref",function()
+        if chip():getParent():isValid() then
+            Ent = chip():getParent() 
+        else
+            Ent = chip()
+        end
         
-        --Delta = Dist
-        --local Pitch =
-        
-        --print(Pitch)
-        
-        --print(SmoothPitch*PitchMul)
-
         if HornPlay:isPlaying() or HornStop:isPlaying() then
             if player():inVehicle() then
                 HornPlay:setDSP(14)
@@ -48,8 +47,8 @@ elseif CLIENT then
                 HornStop:setPitch(HornPitch)
             else
                 local Dist = player():getPos() - chip():getPos()
-                local Pitch = (chip():getVelocity():dot(Dist)/Dist:getLength())/150
-            
+                local Pitch = (Ent:getVelocity():dot(Dist)/Dist:getLength())/150
+                
                 HornPlay:setDSP(1)
                 HornStop:setDSP(1)
             
@@ -65,20 +64,14 @@ elseif CLIENT then
         if horn >= 1 then
             timer.stop("hstop")
             HornPlay:play()
-            --HornStop:stop()
-            --chip():emitSound(HornOn,HornDist,100,1)
         elseif horn == 0 then
             HornStop:stop()
             HornPlay:stop(0.1)
             --chog says hi
             HornStop:play()
-            
-            --print(HornOffDur)
             timer.create("hstop",sounds.duration(HornOff),1,function()
-                --print("stop")
                 HornStop:stop()
             end)
         end
     end)
-
 end
