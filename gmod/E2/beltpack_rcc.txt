@@ -1,0 +1,182 @@
+@name Beltpack RCC
+@inputs Base:entity MU_Master RemoteMode MPH CtrlTablePassthru:table FrontPlugInPassthu:array BellPassthru
+@outputs CtrlTable:table FrontPlugOut:array Throttle_OVR Bell RemoteMode Operator:entity Speed_OVR
+
+@inputs #Speed_OVR #Throttle_OVR ER_OVR BC_OVR
+@persist Controls:table ControlCompile:table Operator:entity
+@persist StoredPlug:array SpeedEnum:table Throttle_OVR ER_OVR BC_OVR Dir SpeedNotch
+@persist Throttle_Lerp BC_Lerp StoppedQ Speed_OVR
+@trigger MU_Master RemoteMode
+@model models/rlc_delta_lua/accessories/beltpack_interface.mdl
+
+#Toast
+
+#I have a dedicated team of testers for all of my work. It's called userbase.
+
+
+#Setup:
+#Base is wired to the locomotive base prop.
+#RemoteMode is wired to a button of your choice.
+#CtrlTablePassthru is wired to CtrlTable on your CONTROL STAND.
+#CtrlTable on your RLC chip is wired to the RCC.
+#Wire your front plug to this E2 as if it were RLC and wire RLC's FrontPlugIn to the RCC.
+#BellPassthru and Bell can be wired to give the RCC control of the bell.
+
+
+
+#Known issues: 
+#The compressor will start pumping forever at some unknown point.
+#Mode of displaying information about the RCC is bad.
+#Regular MU compatability while RCO is disabled is untested.
+#Math responsible for control is very barbaric, train handling may be unsatisfactory.
+
+if(first() | dupefinished()){
+    Controls = table() #Don't touch
+    
+    Controls["RevFwd",string] = "insert"
+    Controls["RevRev",string] = "delete"
+    
+    Controls["SpdUp",string] = "pad_plus"
+    Controls["SpdDn",string] = "pad_minus"
+    
+    #Controls["Horn",string] = "pad_0"
+    #Controls["Bell",string] = "pad_period"
+    
+    StoredPlug = array(#Sorry Met, I stole it.
+        0, #Reverser, 
+        0, #Throttle,
+        0, #max(DynamicBrakingPower,ForceDynaPower),
+        138, #MainRes,
+        0, #LocoBrakePressure,
+        1, #GenField,
+        0, #Horsepower
+        0, #Locos in Consist
+        0, #Is Compressing
+        0, #light
+        2, #heartbeat
+        0, #sand
+        1, #selector notch
+        0, #wheelslip alarm
+        0, #weight
+        1000, #total compressor CFM
+        1, #hump multiplier
+        50, #total extra brake res volume
+        0 #brake warning
+
+    )
+    
+    SpeedEnum = table(
+    0,#Stop
+    #-1,#Coast B(raking)
+    #-2,#Coast
+    3,#Couple
+    4,
+    7,
+    10,
+    15)
+    
+    #Compile a control table
+    ControlCompile = table()
+    foreach(K,V:string = Controls){
+        ControlCompile[V,string] = K
+    }
+    
+    Speed_OVR = 0
+    SpeedNotch = 0
+    StoppedQ = 0
+    Dir = 0
+    Operator = owner()
+    runOnKeys(Operator,1)
+}
+
+interval(100)#sorry
+
+if(MU_Master == 0 & RemoteMode){
+    RemoteMode = 1
+    if(keyClk(Operator) == 1){
+        CurKey = keyClkPressed()
+        
+        if(ControlCompile[CurKey,string] == "RevFwd" & SpeedNotch == 0){Dir++}
+        if(ControlCompile[CurKey,string] == "RevRev" & SpeedNotch == 0){Dir--}
+        
+        if(ControlCompile[CurKey,string] == "SpdUp"){SpeedNotch++}
+        if(ControlCompile[CurKey,string] == "SpdDn"){SpeedNotch--}
+        
+        SpeedNotch = clamp(SpeedNotch,0,SpeedEnum:count())
+        Dir = clamp(Dir,-1,1)
+        
+        Speed_OVR = SpeedEnum[SpeedNotch,number]
+        
+        
+    }
+    
+    CtrlTable = CtrlTablePassthru
+    FrontPlugOut = FrontPlugInPassthu
+    
+    if(changed(Speed_OVR)){print(_HUD_PRINTCENTER, "Target Speed: " + Speed_OVR)}
+    if(changed(Dir)){print(_HUD_PRINTCENTER, "Direction: " + Dir)}
+    #Control calc
+    if(Speed_OVR > MPH){#Accelerate
+        Throttle_OVR = (Speed_OVR - MPH)/10 #Please make better math if you're smarter than I am.
+        Throttle_Lerp += (Throttle_OVR - Throttle_Lerp) * 0.01 / 1 #Smooth result
+        
+        BC_OVR = 0
+        BC_Lerp = 0
+    }elseif(Speed_OVR < MPH+1){
+        Throttle_OVR = 0
+        Throttle_Lerp = 0
+        
+        BC_OVR = 1 #Please make better math if you're smarter than I am.
+        BC_Lerp += (BC_OVR - BC_Lerp) * 0.01 / 1 #Smooth result
+    }else{
+        Throttle_OVR = 0
+        Throttle_Lerp = 0
+        BC_OVR = 0
+    }
+    
+    if(Speed_OVR == 0 & MPH < 0.5 & StoppedQ == 0){#Phys stop
+        foreach(K,V:entity=Base:getConstraints()){
+            V:propPhysicalMaterial("phx_tire_normal")
+            StoppedQ = 1
+            #print("stop")
+            if(Bell & !BellPassthru){Bell = 0}
+            
+        }
+    }
+    if(Speed_OVR != 0 & StoppedQ == 1){
+        foreach(K,V:entity=Base:getConstraints()){
+            V:propPhysicalMaterial("friction_00")
+            StoppedQ = 0
+            #print("start")
+            Bell = 1
+            timer("belloff",5000)
+        }
+    }
+    
+    
+    #Brakes override
+    CtrlTablePassthru["SetEqualRes",number] = ER_OVR
+    CtrlTable = CtrlTablePassthru:clone()
+    
+    #Plug data
+    #1 - Reverser
+    #2 - Throttle
+    
+    #print(Throttle_Lerp)
+    
+    #Plug override
+    StoredPlug[1,number] = Dir*-1
+    StoredPlug[2,number] = Throttle_Lerp*100
+    StoredPlug[5,number] = BC_Lerp*72 #LocoBrakePressure
+    
+    FrontPlugOut = StoredPlug:clone()
+}else{
+    RemoteMode = 0
+    CtrlTable = CtrlTablePassthru
+    FrontPlugOut = FrontPlugInPassthu
+    #stopAllTimers()
+}
+
+if(clk("belloff")){
+    Bell = 0
+}
