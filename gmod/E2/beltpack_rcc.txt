@@ -1,12 +1,13 @@
 @name Beltpack RCC
-@inputs Base:entity MU_Master RemoteMode MPH CtrlTablePassthru:table FrontPlugInPassthu:array BellPassthru
-@outputs CtrlTable:table FrontPlugOut:array Throttle_OVR Bell RemoteMode Operator:entity Speed_OVR
+@inputs Base:entity MU_Master RemoteMode MPH CarCount CtrlTablePassthru:table FrontPlugInPassthu:array BellPassthru HornPassthru
+@outputs CtrlTable:table FrontPlugOut:array Throttle_OVR Horn Bell RemoteMode Operator:entity Speed_OVR
 
 @inputs #Speed_OVR #Throttle_OVR ER_OVR BC_OVR
 @persist Controls:table ControlCompile:table Operator:entity
 @persist StoredPlug:array SpeedEnum:table Throttle_OVR ER_OVR BC_OVR Dir SpeedNotch
 @persist Throttle_Lerp BC_Lerp StoppedQ Speed_OVR
-@trigger MU_Master RemoteMode
+@persist Stcontrol:stcontrol
+@trigger MU_Master RemoteMode CarCount
 @model models/rlc_delta_lua/accessories/beltpack_interface.mdl
 
 #Toast
@@ -24,23 +25,26 @@
 
 
 
-#Known issues: 
+#Known issues/to-do: 
 #The compressor will start pumping forever at some unknown point.
 #Mode of displaying information about the RCC is bad.
 #Regular MU compatability while RCO is disabled is untested.
 #Math responsible for control is very barbaric, train handling may be unsatisfactory.
+#May not play nice with some headlight controllers.
 
 if(first() | dupefinished()){
     Controls = table() #Don't touch
     
+    #Touch
     Controls["RevFwd",string] = "insert"
     Controls["RevRev",string] = "delete"
     
     Controls["SpdUp",string] = "pad_plus"
     Controls["SpdDn",string] = "pad_minus"
+    Controls["Stop",string] = "pad_enter"
     
-    #Controls["Horn",string] = "pad_0"
-    #Controls["Bell",string] = "pad_period"
+    Controls["Horn",string] = "pad_0"
+    Controls["Bell",string] = "pad_decimal"
     
     StoredPlug = array(#Sorry Met, I stole it.
         0, #Reverser, 
@@ -82,27 +86,42 @@ if(first() | dupefinished()){
     }
     
     Speed_OVR = 0
-    SpeedNotch = 0
+    SpeedNotch = 1
     StoppedQ = 0
     Dir = 0
     Operator = owner()
     runOnKeys(Operator,1)
+    
+    #Stcontrol = newStControl(1):setGain(2,0.5,2):setWindup(0,100)#:setPowerPI(vec2(1.1,0.5))
+    
+    
+    
+    #PID Funcs
 }
 
 interval(100)#sorry
 
+#PID = Stcontrol:setIsActive(1):setState(Speed_OVR,MPH)
+
+#print(PID:getControl())
+
 if(MU_Master == 0 & RemoteMode){
     RemoteMode = 1
     if(keyClk(Operator) == 1){
-        CurKey = keyClkPressed()
+        local CurKey = keyClkPressed()
         
-        if(ControlCompile[CurKey,string] == "RevFwd" & SpeedNotch == 0){Dir++}
-        if(ControlCompile[CurKey,string] == "RevRev" & SpeedNotch == 0){Dir--}
+        if(ControlCompile[CurKey,string] == "RevFwd" & SpeedNotch == 1){Dir++}
+        if(ControlCompile[CurKey,string] == "RevRev" & SpeedNotch == 1){Dir--}
         
         if(ControlCompile[CurKey,string] == "SpdUp"){SpeedNotch++}
         if(ControlCompile[CurKey,string] == "SpdDn"){SpeedNotch--}
+        if(ControlCompile[CurKey,string] == "Stop"){SpeedNotch = 0}
         
-        SpeedNotch = clamp(SpeedNotch,0,SpeedEnum:count())
+        if(ControlCompile[CurKey,string] == "Bell" & BellPassthru == 0){Bell = !Bell stoptimer("belloff")}
+        
+        if(ControlCompile[CurKey,string] == "Horn" & HornPassthru == 0){Horn = 1}
+        
+        SpeedNotch = clamp(SpeedNotch,1,SpeedEnum:count())
         Dir = clamp(Dir,-1,1)
         
         Speed_OVR = SpeedEnum[SpeedNotch,number]
@@ -110,11 +129,19 @@ if(MU_Master == 0 & RemoteMode){
         
     }
     
+    if(keyClk(Operator) == -1){
+        local CurKey = keyClkPressed()
+        
+        if(ControlCompile[CurKey,string] == "Horn" & HornPassthru == 0 & Horn == 1){Horn = 0}
+    }
+    
     CtrlTable = CtrlTablePassthru
     FrontPlugOut = FrontPlugInPassthu
     
-    if(changed(Speed_OVR)){print(_HUD_PRINTCENTER, "Target Speed: " + Speed_OVR)}
-    if(changed(Dir)){print(_HUD_PRINTCENTER, "Direction: " + Dir)}
+    #if(changed(Speed_OVR)){print(_HUD_PRINTCENTER, "Target Speed: " + Speed_OVR)}
+    if(changed(Dir) | changed(Speed_OVR)){
+        print(_HUD_PRINTCENTER, "Direction: " + select(Dir+2,"REV","N","FWD") + "\nTarget Speed: " + Speed_OVR + " MPH")
+    }
     #Control calc
     if(Speed_OVR > MPH){#Accelerate
         Throttle_OVR = (Speed_OVR - MPH)/10 #Please make better math if you're smarter than I am.
@@ -139,20 +166,29 @@ if(MU_Master == 0 & RemoteMode){
             V:propPhysicalMaterial("phx_tire_normal")
             StoppedQ = 1
             #print("stop")
-            if(Bell & !BellPassthru){Bell = 0}
+            #if(Bell & !BellPassthru){Bell = 0}
             
         }
     }
     if(Speed_OVR != 0 & StoppedQ == 1){
         foreach(K,V:entity=Base:getConstraints()){
             V:propPhysicalMaterial("friction_00")
+            V:propFreeze(0)
             StoppedQ = 0
             #print("start")
-            Bell = 1
-            timer("belloff",5000)
+            if(Bell == 0){
+                Bell = 1
+                timer("belloff",5000)
+            }
         }
     }
     
+    if(~CarCount & StoppedQ != 1){
+         foreach(K,V:entity=Base:getConstraints()){
+            V:propPhysicalMaterial("friction_00")
+            V:propFreeze(0)
+        }
+    }
     
     #Brakes override
     CtrlTablePassthru["SetEqualRes",number] = ER_OVR
@@ -174,6 +210,8 @@ if(MU_Master == 0 & RemoteMode){
     RemoteMode = 0
     CtrlTable = CtrlTablePassthru
     FrontPlugOut = FrontPlugInPassthu
+    Bell = BellPassthru
+    Horn = HornPassthru
     #stopAllTimers()
 }
 
