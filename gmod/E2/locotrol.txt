@@ -1,0 +1,286 @@
+@name LOCOTROL
+@inputs On1 MU_Master Mark:string Num:string DATA_IN:table FrontPlugInPassthu:array
+@outputs DATA_OUT:table FrontPlugOut:array
+@persist SignalScope Mode Self:string StoredPlug:array DPU_Leader:string RemoteTable:table
+@persist DFrame:dframe ENUM_Mode:table ENUM_Dir:table BtnConv:dbutton BtnDPLead:dbutton BtnDPTrail:dbutton TxtGrpA:dtextentry TxtGrpB:dtextentry TxtGrpC:dtextentry TxtGrpD:dtextentry
+@persist B_Dir C_Dir D_Dir
+@trigger MU_Master Mode
+if(first() | dupefinished() | changed(Self)){
+    #[
+    !!!HIGHLY EXPERIMENTAL!!!
+    !!!USE AT YOUR OWN RISK!!!
+    
+    SETUP:
+    Wire On1 and MU_Master to PT2.
+    Mark and Num are required to define leader on trailing unit. This should be a reporting mark, e.g. BNSF 2279
+    DATA_IN and DATA_OUT are optional, they are used for an intermediate control unit - such as a Harris Box.
+    Wire your physical front plug TO this E2 and wire FrontPlugInPassthu to PT2.
+    Wire PT's front plug input TO this E2.
+    
+    CONDITIONING:
+    Start the unit up and press your use key on this E2, a window will appear.
+    Click DP Lead if the unit is intended for leading DPUs.
+        !!! Ignore the B, C and D control groups for now, those will be used later.
+    Click DP trailing if the unit will be controlled by radio.
+        Type in your leader's reporting mark exactly as it appears, e.g. BNSF 2279
+        
+        
+        
+        
+    KNOWN ISSUES/TO-DO
+    -Implement control groups, only one DPU leader is supported for now.
+    -Headlights may act unpredictably.
+    -Manual fencing does not support dynamics.
+    ]#
+    
+    #Don't touch these.
+    
+    Mode = 0
+    #0 - Conventional/MU
+    #1 - DP Lead
+    #2 - DP Trailing
+    
+    ENUM_Mode = table(
+        0 = "Conventional",
+        1 = "DP Lead",
+        2 = "DP Trailing"
+    )
+    
+    B_Dir = 0
+    C_Dir = 0
+    D_Dir = 0
+    #0 - SAME
+    #1 - OPPOSITE
+    
+    ENUM_Dir = table(
+        0 = "SAME",
+        1 = "OPPOSITE"
+    )
+    
+    Self = Mark + " " + Num
+    DPU_Leader = ""
+    
+    StoredPlug = array(#Sorry Met, I stole it.
+        0, #Reverser, 
+        0, #Throttle,
+        0, #max(DynamicBrakingPower,ForceDynaPower),
+        138, #MainRes,
+        0, #LocoBrakePressure,
+        1, #GenField,
+        0, #Horsepower
+        0, #Locos in Consist
+        0, #Is Compressing
+        0, #light
+        2, #heartbeat
+        0, #sand
+        1, #selector notch
+        0, #wheelslip alarm
+        0, #weight
+        1000, #total compressor CFM
+        1, #hump multiplier
+        50, #total extra brake res volume
+        0 #brake warning
+
+    )
+}
+
+event chipUsed(Player:entity){
+    if(On1 != 0){
+        DFrame = dframe(1)
+        DFrame:center()
+        DFrame:makePopup()
+        DFrame:setSize(256,128*1.5)
+        DFrame:setTitle("DP CONTROLLER")
+        DFrame:create(array(Player))
+        
+        DPanel = dpanel(2,DFrame)
+        DPanel:center()
+        DPanel:dock(_DOCK_FILL)
+        DPanel:dockPadding(4,4,4,4)
+        DPanel:create(array(Player))
+        
+        BtnConv = dbutton(3,DPanel)
+        BtnConv:setText("Conventional")
+        BtnConv:dock(_DOCK_TOP)
+        #BtnConv:setEnabled(0)
+        BtnConv:create(array(Player))
+        
+        
+        BtnDPLead = dbutton(4,DPanel)
+        BtnDPLead:setText("DP Lead")
+        BtnDPLead:dock(_DOCK_TOP)
+        #BtnDPLead:setEnabled(1)
+        BtnDPLead:create(array(Player))
+        
+        BtnDPTrail = dbutton(5,DPanel)
+        BtnDPTrail:setText("DP Trail")
+        BtnDPTrail:dock(_DOCK_TOP)
+        #BtnDPTrail:setEnabled(1)
+        BtnDPTrail:create(array(Player))
+        
+        TxtGrpA = dtextentry(6,DPanel)
+        #TxtGrpB:setHeight(32)
+        TxtGrpA:setText("DP Leader")
+        TxtGrpA:dock(_DOCK_TOP)
+        TxtGrpA:setNoClipping(1)
+        TxtGrpA:create(array(Player))
+        TxtGrpA:setVisible(1)
+        #TxtGrpA:setEnabled(0)
+        
+        TxtGrpB = dtextentry(7,DPanel)
+        #TxtGrpB:setHeight(32)
+        TxtGrpB:setText("Group B Leader")
+        TxtGrpB:dock(_DOCK_TOP)
+        TxtGrpB:setNoClipping(1)
+        TxtGrpB:create(array(Player))
+        TxtGrpB:setVisible(1)
+        #TxtGrpB:setEnabled(0)
+        
+        TxtGrpC = dtextentry(8,DPanel)
+        #TxtGrpB:setHeight(32)
+        TxtGrpC:setText("Group C Leader")
+        TxtGrpC:dock(_DOCK_TOP)
+        TxtGrpC:setNoClipping(1)
+        TxtGrpC:create(array(Player))
+        TxtGrpC:setVisible(1)
+        #TxtGrpC:setEnabled(0)
+        
+        TxtGrpD = dtextentry(9,DPanel)
+        #TxtGrpB:setHeight(32)
+        TxtGrpD:setText("Group D Leader")
+        TxtGrpD:dock(_DOCK_TOP)
+        TxtGrpD:setNoClipping(1)
+        TxtGrpD:create(array(Player))
+        TxtGrpD:setVisible(1)
+        #TxtGrpD:setEnabled(0)
+        
+        
+    }
+    if(Mode == 0){
+        BtnConv:setEnabled(0) BtnDPLead:setEnabled(1) BtnDPTrail:setEnabled(1) 
+        TxtGrpA:setVisible(0) TxtGrpB:setVisible(0) TxtGrpC:setVisible(0) TxtGrpD:setVisible(0)
+    }
+    if(Mode == 1){
+        BtnConv:setEnabled(1) BtnDPLead:setEnabled(0) BtnDPTrail:setEnabled(1)
+        TxtGrpA:setVisible(0) TxtGrpB:setVisible(1) TxtGrpC:setVisible(1) TxtGrpD:setVisible(1)
+    }
+    if(Mode == 2){
+        BtnConv:setEnabled(1) BtnDPLead:setEnabled(1) BtnDPTrail:setEnabled(0)
+        TxtGrpA:setVisible(1) TxtGrpB:setVisible(0) TxtGrpC:setVisible(0) TxtGrpD:setVisible(0)
+    }
+    
+    BtnConv:modify(array(Player))
+    BtnDPLead:modify(array(Player))
+    BtnDPTrail:modify(array(Player))
+    
+    if(DPU_Leader != ""){
+        TxtGrpA:setText(DPU_Leader)
+        
+    }
+    
+    TxtGrpA:modify(array(Player))
+    TxtGrpB:modify(array(Player))
+    TxtGrpC:modify(array(Player))
+    TxtGrpD:modify(array(Player))
+}
+
+event vguiClk(Player:entity, ID:number, Values:table){
+    if(On1 != 0){
+        if(ID == 3){Mode = 0}#Conventional
+        if(ID == 4){Mode = 1}#DP Lead
+        if(ID == 5){Mode = 2}#DP Trail
+        
+        if(Mode == 0){BtnConv:setEnabled(0) BtnDPLead:setEnabled(1) BtnDPTrail:setEnabled(1)}
+        if(Mode == 1){BtnConv:setEnabled(1) BtnDPLead:setEnabled(0) BtnDPTrail:setEnabled(1)}
+        if(Mode == 2){BtnConv:setEnabled(1) BtnDPLead:setEnabled(1) BtnDPTrail:setEnabled(0)}
+        
+        if(ID == 6){DPU_Leader = TxtGrpA:getText(Player) print(TxtGrpA:getText(Player))}
+        
+        BtnConv:modify(array(Player))
+        BtnDPLead:modify(array(Player))
+        BtnDPTrail:modify(array(Player))
+        
+        switch(Mode){
+            case 0,#Conventional
+                
+            case 1,#DP Lead
+                
+            case 2,#DP Trail
+                
+            default,
+                #Mode = 0
+        }
+        
+        if(Mode == 0){
+        BtnConv:setEnabled(0) BtnDPLead:setEnabled(1) BtnDPTrail:setEnabled(1) 
+        TxtGrpA:setVisible(0) TxtGrpB:setVisible(0) TxtGrpC:setVisible(0) TxtGrpD:setVisible(0)
+        }
+        if(Mode == 1){
+            BtnConv:setEnabled(1) BtnDPLead:setEnabled(0) BtnDPTrail:setEnabled(1)
+            TxtGrpA:setVisible(0) TxtGrpB:setVisible(1) TxtGrpC:setVisible(1) TxtGrpD:setVisible(1)
+        }
+        if(Mode == 2){
+            BtnConv:setEnabled(1) BtnDPLead:setEnabled(1) BtnDPTrail:setEnabled(0)
+            TxtGrpA:setVisible(1) TxtGrpB:setVisible(0) TxtGrpC:setVisible(0) TxtGrpD:setVisible(0)
+        }
+        
+        TxtGrpA:modify(array(Player))
+        TxtGrpB:modify(array(Player))
+        TxtGrpC:modify(array(Player))
+        TxtGrpD:modify(array(Player))
+        
+        print(Player)
+        print(ID)
+        print(ENUM_Mode[Mode,string])
+    }
+}
+
+interval(250)#euch
+
+if(MU_Master & Mode == 0){
+    stoptimer("clk")
+    FrontPlugOut = FrontPlugInPassthu
+}elseif(MU_Master & Mode == 1){#Broadcasting mode (DP Lead)
+    timer("clk",3,0,function(){
+        print("tick")
+        
+        RemoteTable = (table(
+            "locotrol" = 1,
+            "sender"   = Self:lower(),
+            "trailing" = 0,
+            "mu_cable" = FrontPlugInPassthu
+        ))
+        
+        #DATA_OUT = RemoteTable
+        
+        if(!->DATA_OUT){DATA_IN = RemoteTable}else{
+            DATA_OUT = RemoteTable
+        }
+        
+        broadcastRemoteEvent(DATA_IN)
+    })
+    
+    #setName("LOCOTROL\n"+ ENUM_Mode[Mode,string])
+}elseif(Mode == 2){#Receive Mode
+    stoptimer("clk")
+}else{
+    stoptimer("clk")
+    setName("LOCOTROL")
+    Mode = 0
+}
+
+event remote(Origin:entity, Ply:entity, Table:table){
+    if(Mode == 2 & Table["locotrol",number] == 1){#Trailing DP Mode, ensure it's actually a LOCOTROL payload.
+        print("Got LOCOTROL data from " + Table["sender",string]+",")
+        print("expected " + DPU_Leader:lower())
+        
+        if(Table["sender",string]:lower() == DPU_Leader:lower()){
+            PlugData = Table["mu_cable",array]
+            PlugData[1,number] = PlugData[1,number]*-1
+            FrontPlugOut = PlugData
+            print(FrontPlugOut)
+        }
+    }elseif(Mode == 2 & Table["locotrol",number] == 2){#Leader comm test
+        
+    }
+}
