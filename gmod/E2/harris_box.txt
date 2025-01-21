@@ -1,6 +1,6 @@
 @name Harris Box
-@inputs Seat:entity On Power
-@outputs 
+@inputs Seat:entity On Power DATA_IN:table
+@outputs DATA_OUT:table
 @persist E:entity Controls:table ControlCompile:table
 @persist SelectorNotch IndpMotoring
 @model models/rlc_delta_lua/accessories/harris_box_1.mdl
@@ -8,6 +8,26 @@
 #Toast
 
 if(first() | dupefinished()){
+    
+    #[
+    !!!HIGHLY EXPERIMENTAL!!!
+    !!!USE AT YOUR OWN RISK!!!
+    
+    SETUP:
+    Wire Seat to your... seat.
+    Wire On to something relative to the locomotive itself, such as gen field.
+    Wire Power to a button on the box.
+    Wire DATA_IN to DATA_OUT on the LOCOTROL E2.
+    Wire DATA_IN on the LOCOTROL E2 to DATA_OUT on this box.
+    Configure keybinds below.
+    
+    OPERATION:
+    ISOLATE setting cuts out power and air brakes on DPUs
+    IDLE setting idles out your DPUs, air brakes remain functional
+    MU setting transmits all data as-is. This is your regular operating mode.
+    
+    To enable fencing, set the selector to at least notch one and press the fence button.
+    ]#
     
     Controls = table() #Don't touch
     
@@ -39,17 +59,17 @@ event keyPressed(Ply:entity, Key:string, Down:number, KeyBind:string){
             
             SelectorNotch = clamp(SelectorNotch,-2,8)
             
-            print(SelectorNotch)
+            #print(SelectorNotch)
             
             E:setBoneAngRelative(E:boneIndex("notch_selector"),ang(-230*((SelectorNotch+2)/10),0,0))
             
             if(changed(SelectorNotch)){E:soundPlay("selector",0,"monkssounds/buttons/button35.wav")}
             
-            if(SelectorNotch == -2){E:setBodygroup(4,1)}
-            if(SelectorNotch == -1){E:setBodygroup(4,2)}
-            if(SelectorNotch == 0){E:setBodygroup(4,3) IndpMotoring = 0}
-            if(!IndpMotoring & SelectorNotch > 0){E:setBodygroup(4,3)}
-            if(IndpMotoring & SelectorNotch > 0){E:setBodygroup(4,4)}
+            if(SelectorNotch == -2){E:setBodygroup(4,1)}#Isolate
+            if(SelectorNotch == -1){E:setBodygroup(4,2)}#Idle
+            if(SelectorNotch == 0){E:setBodygroup(4,3) IndpMotoring = 0}#MU
+            if(!IndpMotoring & SelectorNotch > 0){E:setBodygroup(4,3)}#MU
+            if(IndpMotoring & SelectorNotch > 0){E:setBodygroup(4,4)}#Indpendent Motoring
         }
     }
 }
@@ -60,18 +80,29 @@ if(changed(SelectorNotch)){
     
 }
 
+interval(250)
+
 if(On & Power){
     E:setBodygroup(13,2)#Console power
     E:setBodygroup(12,1)#Lead/Trail radio
     E:setBodygroup(6,1)#Comm status
     E:setBodygroup(3,1)#FV
     
-    if(SelectorNotch == -2){E:setBodygroup(4,1)}
-    if(SelectorNotch == -1){E:setBodygroup(4,2)}
-    if(SelectorNotch == 0){E:setBodygroup(4,3)}
-    if(!IndpMotoring & SelectorNotch > 0){E:setBodygroup(4,3)}
+    if(DATA_IN["locotrol",number] != 0){E:setBodygroup(6,2)}else{E:setBodygroup(6,1)}#Comm status
     
+    if(SelectorNotch == -2){E:setBodygroup(4,1) DATA_IN["mu_cable",array][2,number] = 0 DATA_IN["mu_cable",array][5,number] = 0}#Isolate
+    if(SelectorNotch == -1){E:setBodygroup(4,2) DATA_IN["mu_cable",array][2,number] = 0}#Idle
+    if(SelectorNotch == 0){E:setBodygroup(4,3) DATA_OUT = DATA_IN}#MU
+    if(!IndpMotoring & SelectorNotch > 0){E:setBodygroup(4,3)}
+    if(IndpMotoring & SelectorNotch > 0){#Indpendent Motoring
+        E:setBodygroup(4,4)
+        DATA_IN["mu_cable",array][2,number] = (SelectorNotch/8)*100
+    }
+    
+    DATA_OUT = DATA_IN
 }else{
+    DATA_OUT = DATA_IN
+    
     IndpMotoring = 0
     
     if(On){
