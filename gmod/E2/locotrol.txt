@@ -229,9 +229,9 @@ event vguiClk(Player:entity, ID:number, Values:table){
         TxtGrpC:modify(array(Player))
         TxtGrpD:modify(array(Player))
         
-        print(Player)
-        print(ID)
-        print(ENUM_Mode[Mode,string])
+        #print(Player)
+        #print(ID)
+        #print(ENUM_Mode[Mode,string])
     }
 }
 
@@ -271,14 +271,14 @@ if(MU_Master & Mode == 0){
 
 event remote(Origin:entity, Ply:entity, Table:table){
     if(Mode == 2 & Table["locotrol",number] == 1){#Trailing DP Mode, ensure it's actually a LOCOTROL payload.
-        print("Got LOCOTROL data from " + Table["sender",string]+",")
-        print("expected " + DPU_Leader:lower())
+        #print("Got LOCOTROL data from " + Table["sender",string]+",")
+        #print("expected " + DPU_Leader:lower())
         
         if(Table["sender",string]:lower() == DPU_Leader:lower()){
             PlugData = Table["mu_cable",array]
             PlugData[1,number] = PlugData[1,number]*-1
             FrontPlugOut = PlugData
-            print(FrontPlugOut)
+            #print(FrontPlugOut)
         }
     }elseif(Mode == 2 & Table["locotrol",number] == 2){#Leader comm test
         
